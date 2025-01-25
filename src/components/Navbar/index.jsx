@@ -19,7 +19,7 @@ const Navbar = () => {
     <div>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
         <div className="container flex items-center justify-between p-4 mx-auto">
-          <div className="text-2xl font-bold text-blue-600">TravelNow</div>
+          <div className="text-2xl font-bold text-blue-600">TravelNav</div>
           <div className="hidden space-x-6 md:flex">
             <a href="/" className="text-gray-800 hover:text-blue-600">
               Home
