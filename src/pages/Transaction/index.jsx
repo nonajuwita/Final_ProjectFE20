@@ -6,24 +6,32 @@ const Transactions = () => {
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      try {
-        const response = await fetch(
-          "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/get-my-transactions",
-          {
-            headers: {
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-              Authorization:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5vbmE0QGdtYWlsLmNvbSIsInVzZXJJZCI6IjcyMzBkMmMyLTU0ZjEtNDZhNS04ZTQ4LWQ2YjQ3ZGEyN2M4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NDQ5Njc2fQ.SZlMq8VYrBkWDAGQF2FeWagqpMJ4QohLtFgm5_hon3w",
-            },
+        try {
+          const response = await fetch(
+            "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/my-transactions",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+                Authorization:
+                  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5vbmE0QGdtYWlsLmNvbSIsInVzZXJJZCI6IjcyMzBkMmMyLTU0ZjEtNDZhNS04ZTQ4LWQ2YjQ3ZGEyN2M4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NDQ5Njc2fQ.SZlMq8VYrBkWDAGQF2FeWagqpMJ4QohLtFgm5_hon3w",
+              },
+            }
+          );
+      
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
           }
-        );
-
-        const data = await response.json();
-        setTransactions(data.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+      
+          const data = await response.json();
+          console.log("Transactions:", data);
+          return data;
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+        }
+      };
+      
 
     fetchTransactions();
   }, []);
