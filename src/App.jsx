@@ -9,6 +9,8 @@ import CategoryDetail from "./components/CategoryDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./components/Cart";
+import Transactions from "./pages/Transactions"; // Tambahkan import halaman transaksi
+import TransactionDetail from "./pages/Transactions/Detail"; // Tambahkan import halaman detail transaksi
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 
@@ -35,6 +37,10 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cart" element={<Cart />} />
+              {/* Tambahkan route untuk halaman transaksi */}
+              <Route path="/transactions" element={<Transactions />} />
+              {/* Tambahkan route untuk halaman detail transaksi */}
+              <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
             </Routes>
           </div>
         </Router>
