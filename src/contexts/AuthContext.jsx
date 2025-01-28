@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Periksa apakah ada token di localStorage
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthenticated(true);
@@ -19,12 +18,13 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = () => {
+  const login = (token) => {
+    localStorage.setItem('token', token); // Simpan token setelah login
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Hapus token saat logout
     setIsAuthenticated(false);
   };
 
