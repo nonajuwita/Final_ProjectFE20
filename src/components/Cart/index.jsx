@@ -20,7 +20,7 @@ const Cart = () => {
   const handleRemoveItem = (itemId) => {
     const updatedCart = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("", JSON.stringify(updatedCart));
   };
 
   // Fungsi untuk menambah jumlah order
