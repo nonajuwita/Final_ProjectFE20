@@ -3,31 +3,40 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]); // Simpan metode pembayaran
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(""); // Metode pembayaran yang dipilih
   const navigate = useNavigate();
 
-  // Memuat cart dari localStorage saat komponen di-render
   useEffect(() => {
+    // Memuat cart dari localStorage
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    // Pastikan setiap item memiliki quantity setidaknya 1
     const cartWithDefaultQuantity = storedCart.map((item) => ({
       ...item,
       quantity: item.quantity || 1,
     }));
     setCartItems(cartWithDefaultQuantity);
+
+    // Memuat metode pembayaran dari API
+    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods", {
+      headers: {
+        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setPaymentMethods(data.data || []))
+      .catch((error) => console.error("Error fetching payment methods:", error));
   }, []);
 
-  // Fungsi untuk menghapus item dari keranjang
   const handleRemoveItem = (itemId) => {
     const updatedCart = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Fungsi untuk menambah jumlah order
   const handleIncreaseQuantity = (itemId) => {
     const updatedCart = cartItems.map((item) => {
       if (item.id === itemId) {
-        return { ...item, quantity: (item.quantity || 1) + 1 }; // Tambahkan 1
+        return { ...item, quantity: (item.quantity || 1) + 1 };
       }
       return item;
     });
@@ -35,33 +44,62 @@ const Cart = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Fungsi untuk mengurangi jumlah order
   const handleDecreaseQuantity = (itemId) => {
     const updatedCart = cartItems
       .map((item) => {
         if (item.id === itemId) {
           const newQuantity = item.quantity - 1;
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null; // Hapus jika quantity <= 0
+          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
         }
         return item;
       })
-      .filter((item) => item !== null); // Hapus item dengan quantity 0
+      .filter((item) => item !== null);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Menghitung total harga semua item dalam keranjang
   const calculateTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
   };
 
-  // Fungsi untuk checkout
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       alert("Cart is empty!");
-    } else {
-      navigate("/checkout");
+      return;
     }
+
+    if (!selectedPaymentMethod) {
+      alert("Please select a payment method!");
+      return;
+    }
+
+    const transactionData = {
+      activities: cartItems.map((item) => ({
+        activity_id: item.id,
+        quantity: item.quantity,
+      })),
+      payment_method_id: selectedPaymentMethod,
+    };
+
+    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5vbmE0QGdtYWlsLmNvbSIsInVzZXJJZCI6IjcyMzBkMmMyLTU0ZjEtNDZhNS04ZTQ4LWQ2YjQ3ZGEyN2M4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NDQ5Njc2fQ.SZlMq8VYrBkWDAGQF2FeWagqpMJ4QohLtFgm5_hon3w",
+      },
+      body: JSON.stringify(transactionData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert("Transaction successful!");
+        navigate("/transactions"); // Arahkan ke halaman transaksi
+      })
+      .catch((error) => {
+        console.error("Error creating transaction:", error);
+        alert("Transaction failed!");
+      });
   };
 
   return (
@@ -90,23 +128,18 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  {/* Tombol Kurang */}
                   <button
                     onClick={() => handleDecreaseQuantity(item.id)}
                     className="px-3 py-2 text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
                   >
                     -
                   </button>
-
-                  {/* Tombol Tambah */}
                   <button
                     onClick={() => handleIncreaseQuantity(item.id)}
                     className="px-3 py-2 text-white bg-green-500 rounded-full hover:bg-green-600"
                   >
                     +
                   </button>
-
-                  {/* Tombol Remove */}
                   <button
                     onClick={() => handleRemoveItem(item.id)}
                     className="px-3 py-2 text-white bg-red-500 rounded-full hover:bg-red-600"
@@ -121,6 +154,24 @@ const Cart = () => {
             <h3 className="text-lg font-bold text-gray-800">
               Total Price: Rp {calculateTotalPrice().toLocaleString()}
             </h3>
+          </div>
+          <div className="mt-6">
+            <label htmlFor="payment-method" className="block mb-2 text-sm font-medium text-gray-700">
+              Select Payment Method
+            </label>
+            <select
+              id="payment-method"
+              className="w-full px-4 py-2 border rounded-md"
+              value={selectedPaymentMethod}
+              onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+            >
+              <option value="">-- Choose a Payment Method --</option>
+              {paymentMethods.map((method) => (
+                <option key={method.id} value={method.id}>
+                  {method.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex items-center justify-between mt-6">
             <button
