@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // Import useParams for getting URL params
+import { useParams, useNavigate } from "react-router-dom"; // Import useParams and useNavigate
+import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext";
 
 const CategoryDetail = () => {
   const { id } = useParams(); // Get the category ID from URL params
+  const { isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +41,16 @@ const CategoryDetail = () => {
     fetchActivities();
   }, [id]); // Run the effect when the category ID changes
 
+  const handleAddToCart = (activity) => {
+    if (!isAuthenticated) {
+      alert("You need to log in to add items to the cart.");
+      navigate("/login");
+    } else {
+      addToCart(activity);
+      alert(`${activity.title} has been added to your cart.`);
+    }
+  };
+
   if (loading) {
     return <p className="my-8 text-center">Loading activities...</p>;
   }
@@ -60,6 +76,13 @@ const CategoryDetail = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
             <div className="relative z-10 p-6 text-center text-white">
               <h3 className="text-xl font-bold">{activity.title || "Activity Name"}</h3>
+              <p className="mt-2">Price: Rp {activity.price.toLocaleString()}</p>
+              <button
+                className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg"
+                onClick={() => handleAddToCart(activity)}
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         ))}
