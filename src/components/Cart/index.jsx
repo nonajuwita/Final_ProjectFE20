@@ -29,6 +29,11 @@ const Cart = () => {
     }
   };
 
+  // Menghitung total harga semua item dalam keranjang
+  const calculateTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
   return (
     <div className="container px-4 mx-auto my-8">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">Your Cart</h1>
@@ -45,7 +50,14 @@ const Cart = () => {
                     alt={item.name}
                     className="object-cover w-16 h-16 rounded-md"
                   />
-                  <span className="ml-4 text-gray-800">{item.name}</span>
+                  <div className="ml-4">
+                    <h2 className="font-bold text-gray-800">{item.name}</h2>
+                    <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    <p className="text-sm font-bold text-gray-600">
+                      Total: Rp {(item.price * item.quantity).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
                 <div>
                   <button
@@ -58,6 +70,11 @@ const Cart = () => {
               </li>
             ))}
           </ul>
+          <div className="mt-6">
+            <h3 className="text-lg font-bold text-gray-800">
+              Total Price: Rp {calculateTotalPrice().toLocaleString()}
+            </h3>
+          </div>
           <div className="flex items-center justify-between mt-6">
             <button
               onClick={handleCheckout}

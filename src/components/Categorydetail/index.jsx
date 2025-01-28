@@ -1,3 +1,4 @@
+// components/CategoryDetail.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -46,7 +47,13 @@ const CategoryDetail = () => {
       alert("You need to log in to add items to the cart.");
       navigate("/login"); // Arahkan ke halaman login jika belum login
     } else {
-      addToCart(activity); // Tambahkan item ke keranjang jika sudah login
+      const activityDetails = {
+        id: activity.id,
+        title: activity.title,
+        price: activity.price,
+        imageUrl: activity.imageUrls?.[0] || "https://via.placeholder.com/150x150"
+      };
+      addToCart(activityDetails); // Menambahkan item ke keranjang
       alert(`${activity.title} has been added to your cart.`);
     }
   };
