@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // Membuat Context untuk Cart
 const CartContext = createContext();
@@ -8,10 +8,23 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  // Mengambil cart dari localStorage saat pertama kali dimuat
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem('cart');
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
 
+  // Menambahkan item ke cart
   const addToCart = (activity) => {
-    setCart((prevCart) => [...prevCart, activity]);
+    // Mengecek apakah item sudah ada dalam cart
+    const isItemInCart = cart.some(item => item.id === activity.id);
+    if (isItemInCart) {
+      alert("This activity is already in your cart.");
+      return;
+    }
+    const updatedCart = [...cart, activity];
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart)); // Menyimpan cart ke localStorage
   };
 
   return (

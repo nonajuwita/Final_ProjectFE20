@@ -39,7 +39,7 @@ const CategoryDetail = () => {
     };
 
     fetchActivities();
-  }, [id]); // Run the effect when the category ID changes
+  }, [id]);
 
   const handleAddToCart = (activity) => {
     if (!isAuthenticated) {
