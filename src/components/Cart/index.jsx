@@ -1,4 +1,3 @@
-// components/Cart.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -19,72 +18,69 @@ const Cart = () => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  // Fungsi untuk mengarahkan user ke halaman checkout (atau halaman lainnya)
-  const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      alert("Cart is empty!");
-    } else {
-      // Arahkan ke halaman checkout atau proses pembayaran
-      navigate("/checkout");
-    }
-  };
-
   // Menghitung total harga semua item dalam keranjang
   const calculateTotalPrice = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
+  // Fungsi untuk checkout
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert("Cart is empty!");
+    } else {
+      navigate("/checkout");
+    }
+  };
+
   return (
-    <div className="container px-4 mx-auto my-8">
-      <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">Your Cart</h1>
+    <div className="container p-4 mx-auto my-8">
+      <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">Shopping Cart</h1>
       {cartItems.length === 0 ? (
         <p className="text-center text-gray-500">Your cart is empty.</p>
       ) : (
-        <div>
-          <ul>
-            {cartItems.map(item => (
-              <li key={item.id} className="flex items-center justify-between p-4 border-b">
-                <div className="flex items-center">
-                  <img
-                    src={item.imageUrl || "https://via.placeholder.com/150"}
-                    alt={item.name}
-                    className="object-cover w-16 h-16 rounded-md"
-                  />
-                  <div className="ml-4">
-                    <h2 className="font-bold text-gray-800">{item.name}</h2>
-                    <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                    <p className="text-sm font-bold text-gray-600">
-                      Total: Rp {(item.price * item.quantity).toLocaleString()}
-                    </p>
-                  </div>
+        <div className="p-6 bg-white rounded-lg shadow-lg">
+          {/* Daftar Items */}
+          <div className="divide-y divide-gray-200">
+            {cartItems.map((item) => (
+              <div key={item.id} className="flex items-center py-4">
+                <input type="checkbox" className="w-5 h-5 mr-4 text-blue-500 rounded focus:ring focus:ring-blue-300" />
+                <img
+                  src={item.imageUrl || "https://via.placeholder.com/100"}
+                  alt={item.name}
+                  className="object-cover w-20 h-20 border rounded-md"
+                />
+                <div className="flex-1 ml-4">
+                  <h2 className="font-bold text-gray-800">{item.name}</h2>
+                  <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    Total: Rp {(item.price * item.quantity).toLocaleString()}
+                  </p>
                 </div>
-                <div>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="px-4 py-2 text-white bg-red-500 rounded-full hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </li>
+                <button
+                  onClick={() => handleRemoveItem(item.id)}
+                  className="px-4 py-2 ml-4 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
+                >
+                  Remove
+                </button>
+              </div>
             ))}
-          </ul>
-          <div className="mt-6">
-            <h3 className="text-lg font-bold text-gray-800">
-              Total Price: Rp {calculateTotalPrice().toLocaleString()}
-            </h3>
           </div>
-          <div className="flex items-center justify-between mt-6">
+
+          {/* Bagian Footer */}
+          <div className="flex items-center justify-between pt-6 mt-6 border-t">
+            <div>
+              <h3 className="text-lg font-bold text-gray-800">
+                Total: Rp {calculateTotalPrice().toLocaleString()}
+              </h3>
+              <p className="text-sm text-gray-500">Including all applicable taxes</p>
+            </div>
             <button
               onClick={handleCheckout}
-              className="px-6 py-3 text-white bg-blue-500 rounded-full hover:bg-blue-600"
+              className="px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg shadow-lg hover:bg-orange-600"
             >
-              Proceed to Checkout
+              Checkout
             </button>
-            <span className="font-bold text-gray-800">
-              Total Items: {cartItems.length}
-            </span>
           </div>
         </div>
       )}
