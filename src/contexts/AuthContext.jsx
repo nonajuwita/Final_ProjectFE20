@@ -19,13 +19,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token) => {
-    localStorage.setItem('token', token); // Simpan token setelah login
-    setIsAuthenticated(true);
+    localStorage.setItem('token', token); // Simpan token di localStorage
+    setIsAuthenticated(true); // Set status login ke true
   };
 
   const logout = () => {
-    localStorage.removeItem('token'); // Hapus token saat logout
-    setIsAuthenticated(false);
+    localStorage.removeItem('token'); // Hapus token dari localStorage
+    setIsAuthenticated(false); // Set status login ke false
   };
 
   return (
