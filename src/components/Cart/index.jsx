@@ -27,7 +27,7 @@ const Cart = () => {
   const handleIncreaseQuantity = (itemId) => {
     const updatedCart = cartItems.map((item) => {
       if (item.id === itemId) {
-        return { ...item, quantity: ( b|| 1) + 1 }; // Pastikan quantity dimulai dari 1
+        return { ...item, quantity: (item.quantity || 1) + 1 }; // Pastikan quantity dimulai dari 1
       }
       return item;
     });
