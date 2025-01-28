@@ -5,7 +5,7 @@ import { useCart } from "../../contexts/CartContext";
 
 const CategoryDetail = () => {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth(); // Ambil status login dari AuthContext
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -44,9 +44,9 @@ const CategoryDetail = () => {
   const handleAddToCart = (activity) => {
     if (!isAuthenticated) {
       alert("You need to log in to add items to the cart.");
-      navigate("/login");
+      navigate("/login"); // Arahkan ke halaman login jika belum login
     } else {
-      addToCart(activity);
+      addToCart(activity); // Tambahkan item ke keranjang jika sudah login
       alert(`${activity.title} has been added to your cart.`);
     }
   };
@@ -65,12 +65,20 @@ const CategoryDetail = () => {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {activities.map((activity) => (
           <div key={activity.id} className="relative overflow-hidden shadow-xl group rounded-xl">
-            <div className="absolute inset-0 bg-center bg-cover" style={{ backgroundImage: `url(${activity.imageUrls?.[0] || "https://via.placeholder.com/300x200"})` }}></div>
+            <div
+              className="absolute inset-0 bg-center bg-cover"
+              style={{
+                backgroundImage: `url(${activity.imageUrls?.[0] || "https://via.placeholder.com/300x200"})`,
+              }}
+            ></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
             <div className="relative z-10 p-6 text-center text-white">
               <h3 className="text-xl font-bold">{activity.title || "Activity Name"}</h3>
               <p className="mt-2">Price: Rp {activity.price.toLocaleString()}</p>
-              <button className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg" onClick={() => handleAddToCart(activity)}>
+              <button
+                className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg"
+                onClick={() => handleAddToCart(activity)}
+              >
                 Add to Cart
               </button>
             </div>

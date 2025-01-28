@@ -1,12 +1,15 @@
-import React, { createContext, useState, useContext } from "react";
+// contexts/CartContext.js
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  return useContext(CartContext);
+};
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem("cart");
+    const storedCart = localStorage.getItem('cart');
     return storedCart ? JSON.parse(storedCart) : [];
   });
 
@@ -18,7 +21,7 @@ export const CartProvider = ({ children }) => {
     }
     const updatedCart = [...cart, activity];
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Menyimpan cart ke localStorage
+    localStorage.setItem('cart', JSON.stringify(updatedCart)); // Simpan cart ke localStorage
   };
 
   return (
