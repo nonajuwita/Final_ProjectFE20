@@ -54,12 +54,12 @@ const CategoryDetail = () => {
             <div
               className="absolute inset-0 bg-center bg-cover"
               style={{
-                backgroundImage: `url(${activity.imageUrl || "https://via.placeholder.com/300x200"})`,
+                backgroundImage: `url(${activity.imageUrls?.[0] || "https://via.placeholder.com/300x200"})`,
               }}
             ></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
             <div className="relative z-10 p-6 text-center text-white">
-              <h3 className="text-xl font-bold">{activity.name || "Activity Name"}</h3>
+              <h3 className="text-xl font-bold">{activity.title || "Activity Name"}</h3>
             </div>
           </div>
         ))}
