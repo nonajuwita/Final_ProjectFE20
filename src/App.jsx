@@ -9,9 +9,8 @@ import CategoryDetail from "./components/CategoryDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./components/Cart";
-import {AuthProvider}  from "./contexts/AuthContext.jsx";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
-
 
 const App = () => {
   return (
