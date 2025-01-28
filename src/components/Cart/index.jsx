@@ -27,10 +27,25 @@ const Cart = () => {
   const handleIncreaseQuantity = (itemId) => {
     const updatedCart = cartItems.map((item) => {
       if (item.id === itemId) {
-        return { ...item, quantity: (item.quantity || 1) + 1 }; // Pastikan quantity dimulai dari 1
+        return { ...item, quantity: (item.quantity || 1) + 1 }; // Tambahkan 1
       }
       return item;
     });
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  // Fungsi untuk mengurangi jumlah order
+  const handleDecreaseQuantity = (itemId) => {
+    const updatedCart = cartItems
+      .map((item) => {
+        if (item.id === itemId) {
+          const newQuantity = item.quantity - 1;
+          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null; // Hapus jika quantity <= 0
+        }
+        return item;
+      })
+      .filter((item) => item !== null); // Hapus item dengan quantity 0
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -75,7 +90,15 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  {/* Tombol Increase Quantity */}
+                  {/* Tombol Kurang */}
+                  <button
+                    onClick={() => handleDecreaseQuantity(item.id)}
+                    className="px-3 py-2 text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
+                  >
+                    -
+                  </button>
+
+                  {/* Tombol Tambah */}
                   <button
                     onClick={() => handleIncreaseQuantity(item.id)}
                     className="px-3 py-2 text-white bg-green-500 rounded-full hover:bg-green-600"
