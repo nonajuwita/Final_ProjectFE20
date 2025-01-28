@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Use this for navigation
-import { FaArrowRight, FaArrowLeft } from "react-icons/fa"; 
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 
 const Category = () => {
   const [categories, setCategories] = useState([]);
@@ -86,7 +86,7 @@ const Category = () => {
             <div
               className="absolute inset-0 transition-all duration-500 ease-in-out bg-center bg-cover"
               style={{
-                backgroundImage: `url(${cat.imageUrl || "https://via.placeholder.com/300x200"})`,
+                backgroundImage: `url(${cat.imageUrl || "https://via.placeholder.com/300x200"})`, // Corrected here
               }}
             ></div>
             <div className="absolute inset-0 transition-all duration-300 bg-gradient-to-t from-black/50 to-transparent"></div>

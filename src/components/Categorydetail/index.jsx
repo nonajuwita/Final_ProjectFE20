@@ -69,4 +69,3 @@ const CategoryDetail = () => {
 };
 
 export default CategoryDetail;
-
