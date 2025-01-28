@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Import useParams and useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
 
 const CategoryDetail = () => {
-  const { id } = useParams(); // Get the category ID from URL params
+  const { id } = useParams(); // Dapatkan ID kategori dari URL params
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
@@ -42,6 +42,7 @@ const CategoryDetail = () => {
   }, [id]);
 
   const handleAddToCart = (activity) => {
+    console.log("isAuthenticated:", isAuthenticated); // Debugging status login
     if (!isAuthenticated) {
       alert("You need to log in to add items to the cart.");
       navigate("/login");
