@@ -1,18 +1,19 @@
-// components/CategoryDetail.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
 
 const CategoryDetail = () => {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth(); // Ambil status login dari AuthContext
-  const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Cek status login dari localStorage
+  const token = localStorage.getItem("token");
+  const isAuthenticated = token !== null;
 
   useEffect(() => {
     const fetchActivities = async () => {
