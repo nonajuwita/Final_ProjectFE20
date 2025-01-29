@@ -9,8 +9,9 @@ import CategoryDetail from "./components/CategoryDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./components/Cart";
-import Transactions from "./pages/Transaction"; // Tambahkan import halaman transaksi
-import TransactionDetail from "./pages/TransactionDetail"; // Tambahkan import halaman detail transaksi
+import Transactions from "./pages/Transaction";
+import TransactionDetail from "./pages/TransactionDetail";
+import Profile from "./pages/Profile"; // ✅ Tambahkan import Profile
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 
@@ -19,30 +20,27 @@ const App = () => {
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="App">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <Navbar />
-                    <Banners />
-                    <Category />
-                    <Activities />
-                    <Promo />
-                  </>
-                }
-              />
-              <Route path="/categories/:id" element={<CategoryDetail />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cart" element={<Cart />} />
-              {/* Tambahkan route untuk halaman transaksi */}
-              <Route path="/transactions" element={<Transactions />} />
-              {/* Tambahkan route untuk halaman detail transaksi */}
-              <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
-            </Routes>
-          </div>
+          <Navbar /> {/* ✅ Navbar tetap muncul di semua halaman */}
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Banners />
+                  <Category />
+                  <Activities />
+                  <Promo />
+                </>
+              }
+            />
+            <Route path="/categories/:id" element={<CategoryDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/profile" element={<Profile />} /> {/* ✅ Tambahkan Route Profile */}
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
+          </Routes>
         </Router>
       </CartProvider>
     </AuthProvider>
