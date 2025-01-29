@@ -3,20 +3,25 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState([]); // Simpan metode pembayaran
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(""); // Metode pembayaran yang dipilih
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Memuat cart dari localStorage
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartWithDefaultQuantity = storedCart.map((item) => ({
-      ...item,
-      quantity: item.quantity || 1,
-    }));
-    setCartItems(cartWithDefaultQuantity);
+    const token = localStorage.getItem("token");
 
-    // Memuat metode pembayaran dari API
+    // Fetch cart data from the API
+    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts", {
+      headers: {
+        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setCartItems(data.data || []))
+      .catch((error) => console.error("Error fetching cart items:", error));
+
+    // Fetch payment methods
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods", {
       headers: {
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
@@ -30,36 +35,30 @@ const Cart = () => {
   const handleRemoveItem = (itemId) => {
     const updatedCart = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const handleIncreaseQuantity = (itemId) => {
     const updatedCart = cartItems.map((item) => {
       if (item.id === itemId) {
-        return { ...item, quantity: (item.quantity || 1) + 1 };
+        return { ...item, quantity: item.quantity + 1 };
       }
       return item;
     });
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const handleDecreaseQuantity = (itemId) => {
-    const updatedCart = cartItems
-      .map((item) => {
-        if (item.id === itemId) {
-          const newQuantity = item.quantity - 1;
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-        }
-        return item;
-      })
-      .filter((item) => item !== null);
+    const updatedCart = cartItems.map((item) => {
+      if (item.id === itemId && item.quantity > 1) {
+        return { ...item, quantity: item.quantity - 1 };
+      }
+      return item;
+    });
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const handleCheckout = () => {
@@ -94,7 +93,7 @@ const Cart = () => {
       .then((response) => response.json())
       .then((data) => {
         alert("Transaction successful!");
-        navigate("/transactions"); // Arahkan ke halaman transaksi
+        navigate("/transactions");
       })
       .catch((error) => {
         console.error("Error creating transaction:", error);
@@ -111,61 +110,36 @@ const Cart = () => {
         <div>
           <ul>
             {cartItems.map((item) => (
-              <li key={item.id} className="flex items-center justify-between p-4 border-b">
-                <div className="flex items-center">
-                  <img
-                    src={item.imageUrl || "https://via.placeholder.com/150"}
-                    alt={item.name}
-                    className="object-cover w-16 h-16 rounded-md"
-                  />
-                  <div className="ml-4">
-                    <h2 className="font-bold text-gray-800">{item.name}</h2>
-                    <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity || 1}</p>
-                    <p className="text-sm font-bold text-gray-600">
-                      Total: Rp {(item.price * (item.quantity || 1)).toLocaleString()}
-                    </p>
-                  </div>
+              <li key={item.id} className="mb-4 flex items-center">
+                <img src={item.imageUrl} alt={item.title} className="w-24 h-24 mr-4" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold">{item.title}</h3>
+                  <p>Price: Rp {item.price.toLocaleString()}</p>
+                  <p>Quantity: {item.quantity}</p>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => handleDecreaseQuantity(item.id)}
-                    className="px-3 py-2 text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() => handleIncreaseQuantity(item.id)}
-                    className="px-3 py-2 text-white bg-green-500 rounded-full hover:bg-green-600"
-                  >
+                <div className="flex space-x-2">
+                  <button onClick={() => handleIncreaseQuantity(item.id)} className="px-2 py-1 bg-blue-500 text-white rounded">
                     +
                   </button>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="px-3 py-2 text-white bg-red-500 rounded-full hover:bg-red-600"
-                  >
+                  <button onClick={() => handleDecreaseQuantity(item.id)} className="px-2 py-1 bg-blue-500 text-white rounded">
+                    -
+                  </button>
+                  <button onClick={() => handleRemoveItem(item.id)} className="px-2 py-1 bg-red-500 text-white rounded">
                     Remove
                   </button>
                 </div>
               </li>
             ))}
           </ul>
-          <div className="mt-6">
-            <h3 className="text-lg font-bold text-gray-800">
-              Total Price: Rp {calculateTotalPrice().toLocaleString()}
-            </h3>
-          </div>
-          <div className="mt-6">
-            <label htmlFor="payment-method" className="block mb-2 text-sm font-medium text-gray-700">
-              Select Payment Method
-            </label>
+
+          <div className="mt-4">
+            <h2 className="text-lg font-bold">Select Payment Method</h2>
             <select
-              id="payment-method"
-              className="w-full px-4 py-2 border rounded-md"
-              value={selectedPaymentMethod}
+              className="mt-2 w-full p-2 bg-white border rounded"
               onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+              value={selectedPaymentMethod}
             >
-              <option value="">-- Choose a Payment Method --</option>
+              <option value="">Select a payment method</option>
               {paymentMethods.map((method) => (
                 <option key={method.id} value={method.id}>
                   {method.name}
@@ -173,14 +147,12 @@ const Cart = () => {
               ))}
             </select>
           </div>
-          <div className="flex items-center justify-between mt-6">
-            <button
-              onClick={handleCheckout}
-              className="px-6 py-3 text-white bg-blue-500 rounded-full hover:bg-blue-600"
-            >
+
+          <div className="mt-4 text-right">
+            <h2 className="text-xl font-bold">Total: Rp {calculateTotalPrice().toLocaleString()}</h2>
+            <button onClick={handleCheckout} className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
               Proceed to Checkout
             </button>
-            <span className="font-bold text-gray-800">Total Items: {cartItems.length}</span>
           </div>
         </div>
       )}
