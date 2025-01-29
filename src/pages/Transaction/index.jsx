@@ -25,10 +25,13 @@ const Transactions = () => {
         );
 
         if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
+          const errorMessage = `Error ${response.status}: ${response.statusText}`;
+          console.error(errorMessage);
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
+        console.log("Transactions Data:", data);  // Debugging line
         setTransactions(data.data); // Pastikan data disimpan di state
       } catch (error) {
         setError(error.message);
