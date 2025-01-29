@@ -11,7 +11,6 @@ const CategoryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cek status login dari localStorage
   const token = localStorage.getItem("token");
   const isAuthenticated = token !== null;
 
@@ -46,16 +45,36 @@ const CategoryDetail = () => {
   const handleAddToCart = (activity) => {
     if (!isAuthenticated) {
       alert("You need to log in to add items to the cart.");
-      navigate("/login"); // Arahkan ke halaman login jika belum login
+      navigate("/login");
     } else {
       const activityDetails = {
-        id: activity.id,
-        title: activity.title,
-        price: activity.price,
-        imageUrl: activity.imageUrls?.[0] || "https://via.placeholder.com/150x150"
+        activity_id: activity.id,
+        quantity: 1, // Default quantity is 1
       };
-      addToCart(activityDetails); // Menambahkan item ke keranjang
-      alert(`${activity.title} has been added to your cart.`);
+
+      // Call the API to add to cart
+      fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/add-cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(activityDetails),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            addToCart(activityDetails); // Update the cart context
+            alert(`${activity.title} has been added to your cart.`);
+          } else {
+            alert("Failed to add item to cart.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding to cart:", error);
+          alert("Failed to add item to cart.");
+        });
     }
   };
 
