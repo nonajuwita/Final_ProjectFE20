@@ -31,8 +31,8 @@ const Transactions = () => {
         }
 
         const data = await response.json();
-        console.log("Transactions Data:", data);  // Debugging line
-        setTransactions(data.data); // Pastikan data disimpan di state
+        console.log("Transactions Data:", data);
+        setTransactions(data.data || []); // Pastikan data disimpan di state
       } catch (error) {
         setError(error.message);
       } finally {
@@ -53,8 +53,8 @@ const Transactions = () => {
         transactions.map((txn) => (
           <div key={txn.id} className="p-4 mt-4 border rounded">
             <h2 className="font-bold">Transaction ID: {txn.id}</h2>
-            <p>Total: Rp {txn.total.toLocaleString()}</p>
-            <p>Date: {new Date(txn.createdAt).toLocaleString()}</p>
+            <p>Total: Rp {txn.total ? txn.total.toLocaleString() : 'N/A'}</p>
+            <p>Date: {txn.createdAt ? new Date(txn.createdAt).toLocaleString() : 'N/A'}</p>
           </div>
         ))
       ) : (
