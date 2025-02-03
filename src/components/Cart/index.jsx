@@ -3,20 +3,35 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState([]); // Simpan metode pembayaran
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(""); // Metode pembayaran yang dipilih
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Memuat cart dari localStorage
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartWithDefaultQuantity = storedCart.map((item) => ({
-      ...item,
-      quantity: item.quantity || 1,
-    }));
-    setCartItems(cartWithDefaultQuantity);
+  // Dapatkan token dari localStorage
+  const token = localStorage.getItem("token");
 
-    // Memuat metode pembayaran dari API
+  useEffect(() => {
+    if (!token) {
+      alert("You need to log in first!");
+      navigate("/login");
+      return;
+    }
+
+    // Fetch cart data from API
+    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts", {
+      headers: {
+        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Cart Data:", data);
+        setCartItems(data.data || []);
+      })
+      .catch((error) => console.error("Error fetching cart:", error));
+
+    // Fetch payment methods
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods", {
       headers: {
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
@@ -25,43 +40,14 @@ const Cart = () => {
       .then((response) => response.json())
       .then((data) => setPaymentMethods(data.data || []))
       .catch((error) => console.error("Error fetching payment methods:", error));
-  }, []);
+  }, [token, navigate]);
 
-  const handleRemoveItem = (itemId) => {
-    const updatedCart = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  const handleIncreaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, quantity: (item.quantity || 1) + 1 };
-      }
-      return item;
-    });
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  const handleDecreaseQuantity = (itemId) => {
-    const updatedCart = cartItems
-      .map((item) => {
-        if (item.id === itemId) {
-          const newQuantity = item.quantity - 1;
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-        }
-        return item;
-      })
-      .filter((item) => item !== null);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
+  // Menghitung total harga semua item dalam cart
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
+  // Proses Checkout
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       alert("Cart is empty!");
@@ -81,20 +67,26 @@ const Cart = () => {
       payment_method_id: selectedPaymentMethod,
     };
 
+    console.log("Sending transaction data:", transactionData);
+
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5vbmE0QGdtYWlsLmNvbSIsInVzZXJJZCI6IjcyMzBkMmMyLTU0ZjEtNDZhNS04ZTQ4LWQ2YjQ3ZGEyN2M4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NDQ5Njc2fQ.SZlMq8VYrBkWDAGQF2FeWagqpMJ4QohLtFgm5_hon3w",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(transactionData),
     })
       .then((response) => response.json())
       .then((data) => {
-        alert("Transaction successful!");
-        navigate("/transactions"); // Arahkan ke halaman transaksi
+        console.log("Transaction Response:", data);
+        if (data.success) {
+          alert("Transaction successful!");
+          navigate("/transactions");
+        } else {
+          alert("Transaction failed: " + (data.message || "Unknown error"));
+        }
       })
       .catch((error) => {
         console.error("Error creating transaction:", error);
@@ -105,6 +97,7 @@ const Cart = () => {
   return (
     <div className="container px-4 mx-auto my-8">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">Your Cart</h1>
+
       {cartItems.length === 0 ? (
         <p className="text-center text-gray-500">Your cart is empty.</p>
       ) : (
@@ -121,40 +114,22 @@ const Cart = () => {
                   <div className="ml-4">
                     <h2 className="font-bold text-gray-800">{item.name}</h2>
                     <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity || 1}</p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                     <p className="text-sm font-bold text-gray-600">
-                      Total: Rp {(item.price * (item.quantity || 1)).toLocaleString()}
+                      Total: Rp {(item.price * item.quantity).toLocaleString()}
                     </p>
                   </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => handleDecreaseQuantity(item.id)}
-                    className="px-3 py-2 text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() => handleIncreaseQuantity(item.id)}
-                    className="px-3 py-2 text-white bg-green-500 rounded-full hover:bg-green-600"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="px-3 py-2 text-white bg-red-500 rounded-full hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
                 </div>
               </li>
             ))}
           </ul>
+
           <div className="mt-6">
             <h3 className="text-lg font-bold text-gray-800">
               Total Price: Rp {calculateTotalPrice().toLocaleString()}
             </h3>
           </div>
+
           <div className="mt-6">
             <label htmlFor="payment-method" className="block mb-2 text-sm font-medium text-gray-700">
               Select Payment Method
@@ -173,6 +148,7 @@ const Cart = () => {
               ))}
             </select>
           </div>
+
           <div className="flex items-center justify-between mt-6">
             <button
               onClick={handleCheckout}
