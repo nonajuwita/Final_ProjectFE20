@@ -12,21 +12,14 @@ import Cart from "./components/Cart";
 import Transactions from "./pages/Transaction";
 import TransactionDetail from "./pages/TransactionDetail";
 import Profile from "./pages/Profile";
-import AdminDashboard from "./pages/Admin"; // Import halaman Admin
-import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
-import { CartProvider } from "./contexts/CartContext.jsx";
+import AdminPage from "./pages/Admin";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 
-const ProtectedRoute = ({ children, roleRequired }) => {
-  const { isAuthenticated, role } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
-  if (roleRequired && role !== roleRequired) {
-    return <Navigate to="/" />;
-  }
-
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { role, isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!allowedRoles.includes(role)) return <Navigate to="/" />;
   return children;
 };
 
@@ -37,7 +30,7 @@ const App = () => {
         <Router>
           <Navbar />
           <Routes>
-            <Route path="/" element={<Banners />} />
+            <Route path="/" element={<><Banners /><Category /><Activities /><Promo /></>} />
             <Route path="/categories/:id" element={<CategoryDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -45,13 +38,10 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
-
-            {/* Halaman Admin hanya untuk admin */}
-            <Route path="/admin/dashboard" element={
-              <ProtectedRoute roleRequired="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/admin"
+              element={<ProtectedRoute allowedRoles={["admin"]}><AdminPage /></ProtectedRoute>}
+            />
           </Routes>
         </Router>
       </CartProvider>

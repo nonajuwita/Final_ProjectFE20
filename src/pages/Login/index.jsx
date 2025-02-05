@@ -41,10 +41,11 @@ const Login = () => {
 
       // Redirect sesuai role
       if (data.role === "admin") {
-        navigate("/admin/dashboard");
+        navigate("/admin"); // Sesuai dengan route yang ada di App.jsx
       } else {
         navigate("/");
       }
+      
     } catch (err) {
       console.error("Login error:", err.message);
       setError(err.message);
