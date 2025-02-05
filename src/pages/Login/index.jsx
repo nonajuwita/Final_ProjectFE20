@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext"; // ✅ Import useAuth
+import { useAuth } from "../../contexts/AuthContext"; // Sesuaikan path
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +8,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // ✅ Ambil fungsi login dari AuthContext
+  const { login } = useAuth(); // Ambil fungsi login dari context
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,12 +36,12 @@ const Login = () => {
       const data = await response.json();
       console.log("Login successful:", data);
 
-      // ✅ Simpan token dan role menggunakan AuthContext
+      // Simpan token & role menggunakan fungsi login dari context
       login(data.token, data.role);
 
-      // ✅ Arahkan berdasarkan role
+      // Redirect sesuai role
       if (data.role === "admin") {
-        navigate("/admin");
+        navigate("/admin/dashboard");
       } else {
         navigate("/");
       }
@@ -55,20 +55,11 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        className="p-6 bg-white rounded shadow-md w-80"
-        onSubmit={handleLogin}
-      >
-        <h2 className="mb-4 text-2xl font-bold text-center text-blue-600">
-          Login
-        </h2>
-        {error && (
-          <p className="mb-4 text-sm text-center text-red-600">{error}</p>
-        )}
+      <form className="p-6 bg-white rounded shadow-md w-80" onSubmit={handleLogin}>
+        <h2 className="mb-4 text-2xl font-bold text-center text-blue-600">Login</h2>
+        {error && <p className="mb-4 text-sm text-center text-red-600">{error}</p>}
         <div className="mb-4">
-          <label htmlFor="email" className="block mb-1 text-sm text-gray-600">
-            Email
-          </label>
+          <label htmlFor="email" className="block mb-1 text-sm text-gray-600">Email</label>
           <input
             type="email"
             id="email"
@@ -79,9 +70,7 @@ const Login = () => {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="password" className="block mb-1 text-sm text-gray-600">
-            Password
-          </label>
+          <label htmlFor="password" className="block mb-1 text-sm text-gray-600">Password</label>
           <input
             type="password"
             id="password"
@@ -99,10 +88,7 @@ const Login = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
         <p className="mt-4 text-sm text-center text-gray-600">
-          Don't have an account?{" "}
-          <a href="/register" className="text-blue-600 hover:underline">
-            Register
-          </a>
+          Don't have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a>
         </p>
       </form>
     </div>
