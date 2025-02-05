@@ -53,7 +53,7 @@ const CategoryDetail = () => {
       };
 
       // Call the API to add to cart
-      fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/add-cart", {
+      fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

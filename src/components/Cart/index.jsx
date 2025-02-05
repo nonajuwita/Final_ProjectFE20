@@ -5,37 +5,21 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
-    if (!token) {
-      alert("You need to log in first!");
-      navigate("/login");
-      return;
-    }
-
-    // Fetch cart data from API
+    // Fetching cart data from the API instead of localStorage for consistency
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts", {
       headers: {
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log("Cart Data:", data);
-        setCartItems(data.data || []);
-      })
-      .catch((error) => {
-        console.error("Error fetching cart:", error);
-        setError("Failed to load cart data.");
-      });
+      .then((data) => setCartItems(data.data || []))
+      .catch((error) => console.error("Error fetching cart items:", error));
 
-    // Fetch payment methods
+    // Fetching payment methods from the API
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods", {
       headers: {
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
@@ -44,16 +28,43 @@ const Cart = () => {
       .then((response) => response.json())
       .then((data) => setPaymentMethods(data.data || []))
       .catch((error) => console.error("Error fetching payment methods:", error));
+  }, []);
 
-    setLoading(false);
-  }, [token, navigate]);
-
-  // Menghitung total harga semua item dalam cart
-  const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const handleRemoveItem = (itemId) => {
+    const updatedCart = cartItems.filter((item) => item.id !== itemId);
+    setCartItems(updatedCart);
+    // Optionally update the API or localStorage
   };
 
-  // Proses Checkout
+  const handleIncreaseQuantity = (itemId) => {
+    const updatedCart = cartItems.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, quantity: (item.quantity || 1) + 1 };
+      }
+      return item;
+    });
+    setCartItems(updatedCart);
+    // Optionally update the API or localStorage
+  };
+
+  const handleDecreaseQuantity = (itemId) => {
+    const updatedCart = cartItems
+      .map((item) => {
+        if (item.id === itemId) {
+          const newQuantity = item.quantity - 1;
+          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
+        }
+        return item;
+      })
+      .filter((item) => item !== null);
+    setCartItems(updatedCart);
+    // Optionally update the API or localStorage
+  };
+
+  const calculateTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+  };
+
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       alert("Cart is empty!");
@@ -73,26 +84,19 @@ const Cart = () => {
       payment_method_id: selectedPaymentMethod,
     };
 
-    console.log("Sending transaction data:", transactionData);
-
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(transactionData),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Transaction Response:", data);
-        if (data.success) {
-          alert("Transaction successful!");
-          navigate("/transactions");
-        } else {
-          alert("Transaction failed: " + (data.message || "Unknown error"));
-        }
+        alert("Transaction successful!");
+        navigate("/transactions");
       })
       .catch((error) => {
         console.error("Error creating transaction:", error);
@@ -100,13 +104,9 @@ const Cart = () => {
       });
   };
 
-  if (loading) return <p>Loading cart...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
-
   return (
     <div className="container px-4 mx-auto my-8">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">Your Cart</h1>
-
       {cartItems.length === 0 ? (
         <p className="text-center text-gray-500">Your cart is empty.</p>
       ) : (
@@ -122,34 +122,32 @@ const Cart = () => {
                   />
                   <div className="ml-4">
                     <h2 className="font-bold text-gray-800">{item.name}</h2>
-                    <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                    <p className="text-sm font-bold text-gray-600">
-                      Total: Rp {(item.price * item.quantity).toLocaleString()}
-                    </p>
+                    <p>Price: {item.price}</p>
                   </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button onClick={() => handleDecreaseQuantity(item.id)} className="px-2 py-1 text-white bg-gray-600 rounded">
+                    -
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => handleIncreaseQuantity(item.id)} className="px-2 py-1 text-white bg-gray-600 rounded">
+                    +
+                  </button>
+                  <button onClick={() => handleRemoveItem(item.id)} className="text-red-600">Remove</button>
                 </div>
               </li>
             ))}
           </ul>
-
-          <div className="mt-6">
-            <h3 className="text-lg font-bold text-gray-800">
-              Total Price: Rp {calculateTotalPrice().toLocaleString()}
-            </h3>
+          <div className="mt-4 text-right">
+            <p className="text-xl font-bold">Total: Rp {calculateTotalPrice().toLocaleString()}</p>
           </div>
-
-          <div className="mt-6">
-            <label htmlFor="payment-method" className="block mb-2 text-sm font-medium text-gray-700">
-              Select Payment Method
-            </label>
+          <div className="mt-4">
             <select
-              id="payment-method"
-              className="w-full px-4 py-2 border rounded-md"
+              className="p-2 border border-gray-300 rounded"
               value={selectedPaymentMethod}
               onChange={(e) => setSelectedPaymentMethod(e.target.value)}
             >
-              <option value="">-- Choose a Payment Method --</option>
+              <option value="">Select Payment Method</option>
               {paymentMethods.map((method) => (
                 <option key={method.id} value={method.id}>
                   {method.name}
@@ -157,15 +155,13 @@ const Cart = () => {
               ))}
             </select>
           </div>
-
-          <div className="flex items-center justify-between mt-6">
+          <div className="mt-4 text-center">
             <button
               onClick={handleCheckout}
-              className="px-6 py-3 text-white bg-blue-500 rounded-full hover:bg-blue-600"
+              className="px-6 py-2 text-white bg-green-600 rounded-lg"
             >
-              Proceed to Checkout
+              Checkout
             </button>
-            <span className="font-bold text-gray-800">Total Items: {cartItems.length}</span>
           </div>
         </div>
       )}
