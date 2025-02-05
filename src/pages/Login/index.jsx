@@ -34,11 +34,16 @@ const Login = () => {
       const data = await response.json();
       console.log("Login successful:", data);
 
-      // Simpan token ke localStorage
+      // Simpan token dan role ke localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role); // Menyimpan role
 
-      // Arahkan pengguna ke halaman utama setelah login
-      navigate("/");
+      // Cek role dan arahkan ke halaman sesuai
+      if (data.role === "admin") {
+        navigate("/admin/dashboard"); // Jika role admin, arahkan ke halaman admin
+      } else {
+        navigate("/"); // Jika bukan admin, arahkan ke halaman utama
+      }
     } catch (err) {
       console.error("Login error:", err.message);
       setError(err.message);
