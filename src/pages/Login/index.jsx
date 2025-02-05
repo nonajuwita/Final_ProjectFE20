@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext"; // ✅ Import useAuth
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -7,6 +8,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ Ambil fungsi login dari AuthContext
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,15 +36,14 @@ const Login = () => {
       const data = await response.json();
       console.log("Login successful:", data);
 
-      // Simpan token dan role ke localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role); // Menyimpan role
+      // ✅ Simpan token dan role menggunakan AuthContext
+      login(data.token, data.role);
 
-      // Cek role dan arahkan ke halaman sesuai
+      // ✅ Arahkan berdasarkan role
       if (data.role === "admin") {
-        navigate("/admin/dashboard"); // Jika role admin, arahkan ke halaman admin
+        navigate("/admin");
       } else {
-        navigate("/"); // Jika bukan admin, arahkan ke halaman utama
+        navigate("/");
       }
     } catch (err) {
       console.error("Login error:", err.message);
