@@ -13,7 +13,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("role");
-
+  
+    console.log("Stored token:", token);
+    console.log("Stored role:", userRole);
+  
     if (token) {
       setIsAuthenticated(true);
       setRole(userRole);
@@ -22,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       setRole(null);
     }
   }, []);
+  
 
   const login = (token, userRole) => {
     localStorage.setItem("token", token);
