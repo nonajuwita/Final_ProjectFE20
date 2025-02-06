@@ -5,19 +5,21 @@ import Navbar from "./components/Navbar";
 import Category from "./components/Category";
 import Activities from "./components/Activities";
 import Promo from "./components/Promo";
-import CategoryDetail from "./components/Categorydetail";
+import CategoryDetail from "./components/CategoryDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./components/Cart";
 import Transactions from "./pages/Transaction";
 import TransactionDetail from "./pages/TransactionDetail";
 import Profile from "./pages/Profile";
-import Admin from "./pages/Admin"; // Pastikan ini sesuai struktur folder
-import ProfileAdmin from "./pages/ProfileAdmin"; // Import halaman ProfileAdmin
+import Admin from "./pages/Admin"; // Admin page import
+import ProfileAdmin from "./pages/ProfileAdmin"; // ProfileAdmin page import
+import UpdateForm from "./components/UpdateForm";// Update form page for editing items
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 
+// ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { role, isAuthenticated, loading } = useAuth();
 
@@ -44,6 +46,8 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
+
+              {/* Admin and ProfileAdmin routes */}
               <Route
                 path="/admin"
                 element={
@@ -52,13 +56,22 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              {/* Tambahkan rute untuk ProfileAdmin */}
               <Route
                 path="/profileadmin"
                 element={
                   <ProtectedRoute allowedRoles={["admin"]}>
                     <Activities />
                     <ProfileAdmin />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Add route for update form with a dynamic ID */}
+              <Route
+                path="/update/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <UpdateForm />
                   </ProtectedRoute>
                 }
               />
