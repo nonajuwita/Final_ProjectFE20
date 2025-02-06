@@ -18,8 +18,14 @@ import { CartProvider } from "./contexts/CartContext";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { role, isAuthenticated } = useAuth();
+  
+  if (role === null) {
+    return <p>Loading...</p>;
+  }
+  
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (!allowedRoles.includes(role)) return <Navigate to="/" />;
+  
   return children;
 };
 

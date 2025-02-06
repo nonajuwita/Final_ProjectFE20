@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/login",
@@ -27,25 +27,31 @@ const Login = () => {
           body: JSON.stringify({ email, password }),
         }
       );
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
-
+  
       const data = await response.json();
-      console.log("Login successful:", data);
-
+      console.log("Login response:", data); // Debugging
+  
+      // Pastikan mengambil role dari data.data.role
+      const userRole = data.data.role;
+      const token = data.data.token; // Pastikan API mengembalikan token di dalam data.data.token
+  
+      console.log("Extracted role:", userRole);
+      console.log("Extracted token:", token);
+  
       // Simpan token & role menggunakan fungsi login dari context
-      login(data.token, data.role);
-
+      login(token, userRole); // Pastikan userRole benar
+  
       // Redirect sesuai role
-      if (data.role === "admin") {
-        navigate("/admin"); // Sesuai dengan route yang ada di App.jsx
+      if (userRole === "admin") {
+        navigate("/admin");
       } else {
         navigate("/");
       }
-      
     } catch (err) {
       console.error("Login error:", err.message);
       setError(err.message);
@@ -53,6 +59,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
