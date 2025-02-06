@@ -9,23 +9,25 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("role");
-  
+
     console.log("Stored token:", token);
     console.log("Stored role:", userRole);
-  
-    if (token) {
+
+    if (token && userRole) {
       setIsAuthenticated(true);
-      setRole(userRole); // Jangan lupa pastikan role tersimpan dengan benar
+      setRole(userRole);
     } else {
       setIsAuthenticated(false);
       setRole(null);
     }
+
+    setLoading(false);
   }, []);
-  
 
   const login = (token, userRole) => {
     localStorage.setItem("token", token);
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, role, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, role, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
