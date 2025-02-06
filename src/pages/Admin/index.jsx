@@ -28,12 +28,14 @@ const Admin = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [users, setUsers] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activities, setActivities] = useState([]); // New state for activities
   const [loading, setLoading] = useState(true);
 
   const menuItems = [
     { id: 'users', label: 'Users', icon: User },
     { id: 'categories', label: 'Categories', icon: Tag },
-    { id: 'activities', label: 'Activities', icon: Activity },
+    { id: 'activities', label: 'Activities', icon: Activity }, // Updated menu item
     { id: 'promos', label: 'Promos', icon: Ticket },
     { id: 'banners', label: 'Banners', icon: Image },
     { id: 'payment-methods', label: 'Payment Methods', icon: Camera },
@@ -41,6 +43,7 @@ const Admin = () => {
     { id: 'transactions', label: 'Transactions', icon: ClipboardList },
   ];
 
+  // Fetch Users, Categories, and Activities
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -51,27 +54,49 @@ const Admin = () => {
           }
         });
         const data = await response.json();
-  
-        console.log('API response:', JSON.stringify(data, null, 2)); // Pretty-print the response to inspect its structure
-  
-        // Periksa apakah data memiliki properti `data` dan jika `data` adalah array
         if (Array.isArray(data.data)) {
-          setUsers(data.data); // Jika `data` adalah array
-        } else {
-          console.error('Unexpected API response format:', data);
-          setUsers([]); // Jika format tidak sesuai, set users ke array kosong
+          const filteredUsers = data.data.map(({ profilePictureUrl, phoneNumber, ...rest }) => rest);
+          setUsers(filteredUsers);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
-        setUsers([]); // Jika terjadi kesalahan, set users ke array kosong
       } finally {
         setLoading(false);
       }
     };
-  
+
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories', {
+          headers: {
+            'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+          }
+        });
+        const data = await response.json();
+        setCategories(data.data || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    const fetchActivities = async () => {
+      try {
+        const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activities', {
+          headers: {
+            'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+          }
+        });
+        const data = await response.json();
+        setActivities(data.data || []); // Set activities data
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+      }
+    };
+
     fetchUsers();
+    fetchCategories();
+    fetchActivities(); // Fetch activities
   }, []);
-  
 
   const CustomTable = ({ data, columns }) => (
     <div className="w-full overflow-auto">
@@ -91,9 +116,12 @@ const Admin = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((item) => (
             <tr key={item.id} className="hover:bg-gray-50">
-              {Object.values(item).map((value, index) => (
-                <td key={index} className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                  {value}
+              {columns.map((column) => (
+                <td key={column} className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                  {/* Check if the value is an object and render a specific property like `name` */}
+                  {typeof item[column] === 'object' && item[column] !== null
+                    ? item[column].name // Change 'name' to the appropriate property if needed
+                    : item[column]}
                 </td>
               ))}
               <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -112,6 +140,7 @@ const Admin = () => {
       </table>
     </div>
   );
+  
 
   const renderContent = () => {
     const ContentWrapper = ({ title, children }) => (
@@ -153,9 +182,22 @@ const Admin = () => {
         return (
           <ContentWrapper title="Categories Management">
             <CustomTable 
-              data={sampleData.categories}
+              data={categories}
               columns={['ID', 'Name', 'Slug', 'Status']}
             />
+          </ContentWrapper>
+        );
+      case 'activities': // New case for activities
+        return (
+          <ContentWrapper title="Activities Management">
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <CustomTable 
+                data={activities}
+                columns={['ID', 'Name', 'Category', 'Status']}
+              />
+            )}
           </ContentWrapper>
         );
       default:
@@ -213,9 +255,7 @@ const Admin = () => {
                 <li key={item.id}>
                   <button
                     onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 ${
-                      activeSection === item.id ? 'bg-blue-50 text-blue-600' : ''
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 ${activeSection === item.id ? 'bg-blue-50 text-blue-600' : ''}`}
                   >
                     <item.icon className="w-5 h-5" />
                     {sidebarOpen && <span>{item.label}</span>}
