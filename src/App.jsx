@@ -12,7 +12,8 @@ import Cart from "./components/Cart";
 import Transactions from "./pages/Transaction";
 import TransactionDetail from "./pages/TransactionDetail";
 import Profile from "./pages/Profile";
-import AdminPage from "./pages/Admin";
+import Admin from "./pages/Admin"; // Sesuai dengan struktur folder
+
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -46,7 +47,7 @@ const App = () => {
             <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
             <Route
               path="/admin"
-              element={<ProtectedRoute allowedRoles={["admin"]}><AdminPage /></ProtectedRoute>}
+              element={<ProtectedRoute allowedRoles={["admin"]}><Admin /></ProtectedRoute>}
             />
           </Routes>
         </Router>
