@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   User, 
   Tag, 
@@ -25,8 +25,10 @@ const Card = ({ children, className = '', ...props }) => (
 );
 
 const Admin = () => {
-  const [activeSection, setActiveSection] = React.useState('dashboard');
-  const [sidebarOpen, setSidebarOpen] = React.useState(true);
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const menuItems = [
     { id: 'users', label: 'Users', icon: User },
@@ -39,16 +41,37 @@ const Admin = () => {
     { id: 'transactions', label: 'Transactions', icon: ClipboardList },
   ];
 
-  const sampleData = {
-    users: [
-      { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Active' },
-    ],
-    categories: [
-      { id: 1, name: 'Electronics', slug: 'electronics', status: 'Active' },
-      { id: 2, name: 'Clothing', slug: 'clothing', status: 'Active' },
-    ],
-  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user', {
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+            'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+          }
+        });
+        const data = await response.json();
+  
+        console.log('API response:', JSON.stringify(data, null, 2)); // Pretty-print the response to inspect its structure
+  
+        // Periksa apakah data memiliki properti `data` dan jika `data` adalah array
+        if (Array.isArray(data.data)) {
+          setUsers(data.data); // Jika `data` adalah array
+        } else {
+          console.error('Unexpected API response format:', data);
+          setUsers([]); // Jika format tidak sesuai, set users ke array kosong
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setUsers([]); // Jika terjadi kesalahan, set users ke array kosong
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUsers();
+  }, []);
+  
 
   const CustomTable = ({ data, columns }) => (
     <div className="w-full overflow-auto">
@@ -116,10 +139,14 @@ const Admin = () => {
       case 'users':
         return (
           <ContentWrapper title="Users Management">
-            <CustomTable 
-              data={sampleData.users}
-              columns={['ID', 'Name', 'Email', 'Status']}
-            />
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              <CustomTable 
+                data={users}
+                columns={['ID', 'Name', 'Email', 'Status']}
+              />
+            )}
           </ContentWrapper>
         );
       case 'categories':
@@ -186,7 +213,9 @@ const Admin = () => {
                 <li key={item.id}>
                   <button
                     onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 ${activeSection === item.id ? 'bg-blue-50 text-blue-600' : ''}`}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 ${
+                      activeSection === item.id ? 'bg-blue-50 text-blue-600' : ''
+                    }`}
                   >
                     <item.icon className="w-5 h-5" />
                     {sidebarOpen && <span>{item.label}</span>}
