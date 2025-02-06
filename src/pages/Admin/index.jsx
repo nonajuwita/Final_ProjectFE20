@@ -116,12 +116,9 @@ const Admin = () => {
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((item) => (
             <tr key={item.id} className="hover:bg-gray-50">
-              {columns.map((column) => (
-                <td key={column} className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                  {/* Check if the value is an object and render a specific property like `name` */}
-                  {typeof item[column] === 'object' && item[column] !== null
-                    ? item[column].name // Change 'name' to the appropriate property if needed
-                    : item[column]}
+              {Object.values(item).map((value, index) => (
+                <td key={index} className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                  {value}
                 </td>
               ))}
               <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -140,7 +137,6 @@ const Admin = () => {
       </table>
     </div>
   );
-  
 
   const renderContent = () => {
     const ContentWrapper = ({ title, children }) => (
@@ -193,10 +189,17 @@ const Admin = () => {
             {loading ? (
               <p>Loading...</p>
             ) : (
-              <CustomTable 
-                data={activities}
-                columns={['ID', 'Name', 'Category', 'Status']}
+                <CustomTable 
+                data={activities.map(activity => ({
+                  id: activity.id,
+                  name: activity.name,
+                  category: activity.category?.name || 'Uncategorized', // Pastikan kategori ada
+                  image: <img src={activity.imageUrl} alt={activity.name} className="object-cover w-16 h-16 rounded" />,
+                  status: activity.updatedAt, // Contoh: bisa diganti sesuai kebutuhan
+                }))} 
+                columns={['ID', 'Name', 'Category', 'Image', 'Status']}
               />
+              
             )}
           </ContentWrapper>
         );
