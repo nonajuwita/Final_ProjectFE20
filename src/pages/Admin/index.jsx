@@ -13,8 +13,10 @@ import {
   Trash, 
   Menu 
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
+  const navigate = useNavigate(); // Initialize navigate hook
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [users, setUsers] = useState([]);
@@ -99,6 +101,11 @@ const Admin = () => {
     fetchData();
   }, []);
 
+  // Navigate to the update form page
+  const handleEdit = (id) => {
+    navigate(`/update/${id}`); // Navigate to update page with the item id
+  };
+
   const CustomTable = ({ data, columns }) => (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
       <table className="min-w-full table-auto">
@@ -118,7 +125,7 @@ const Admin = () => {
               ))}
               <td className="px-4 py-3 text-sm">
                 <div className="flex space-x-2">
-                  <button className="text-blue-600 hover:text-blue-800">
+                  <button onClick={() => handleEdit(item.id)} className="text-blue-600 hover:text-blue-800">
                     <Pencil className="w-5 h-5" />
                   </button>
                   <button className="text-red-600 hover:text-red-800">
