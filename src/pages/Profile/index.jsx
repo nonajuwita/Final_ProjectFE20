@@ -41,14 +41,14 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mx-auto my-8 p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-3xl font-bold text-center mb-6">My Profile</h1>
+    <div className="container p-6 mx-auto my-8 bg-white rounded-lg shadow-lg">
+      <h1 className="mb-6 text-3xl font-bold text-center">My Profile</h1>
       {user ? (
         <div className="text-center">
           <img
             src={user.profilePictureUrl || "https://via.placeholder.com/150"}
             alt="Profile"
-            className="w-32 h-32 mx-auto rounded-full border border-gray-300"
+            className="w-32 h-32 mx-auto border border-gray-300 rounded-full"
           />
           <p className="mt-4 text-lg">
             <strong>Name:</strong> {user.name}

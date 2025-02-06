@@ -13,6 +13,7 @@ import Transactions from "./pages/Transaction";
 import TransactionDetail from "./pages/TransactionDetail";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin"; // Pastikan ini sesuai struktur folder
+import ProfileAdmin from "./pages/ProfileAdmin"; // Import halaman ProfileAdmin
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -48,6 +49,16 @@ const App = () => {
                 element={
                   <ProtectedRoute allowedRoles={["admin"]}>
                     <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Tambahkan rute untuk ProfileAdmin */}
+              <Route
+                path="/profileadmin"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Activities />
+                    <ProfileAdmin />
                   </ProtectedRoute>
                 }
               />
