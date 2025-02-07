@@ -175,7 +175,7 @@ const Admin = () => {
           <ContentWrapper title="Categories Management">
             <CustomTable 
               data={categories}
-              columns={['ID', 'Name', 'Slug', 'Status']}
+              columns={['ID', 'Name', 'imageURL', 'createdAt','updatedAt']}
             />
           </ContentWrapper>
         );
