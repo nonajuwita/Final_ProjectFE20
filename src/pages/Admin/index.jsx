@@ -101,7 +101,27 @@ const Admin = () => {
 
     fetchData();
   }, []);
+  const [cartItems, setCartItems] = useState([]);
 
+  const fetchCartData = async () => {
+    try {
+      const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts', {
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOEB5YWh1LmNvbSIsInVzZXJJZCI6ImU2NDFlZDU4LTEzODEtNDQ1Ni05NDQ2LTE4ODAyNDVhNzIwNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODkwMzExM30.D5YhDKqjbzq_83CKcI2Q3FfVsaQ0QVL1yQgwxbk04DM',
+          'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+        },
+      });
+      const data = await response.json();
+      setCartItems(data.data || []);
+    } catch (error) {
+      console.error('Error fetching cart data:', error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchCartData();
+  }, []);
+  
   // Navigate to the update form page
   const handleEdit = (id) => {
     let path = '';
@@ -166,10 +186,12 @@ const Admin = () => {
           url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`;
         } else if (activeSection === 'activities') {
           url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-activity/${id}`;
-        } else if (activeSection === 'promos') {  // Add this for promos
+        } else if (activeSection === 'promos') {
           url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-promo/${id}`;
+        } else if (activeSection === 'banners') {  // Add this for banners
+          url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-banner/${id}`;
         }
-        
+  
         const response = await fetch(url, {
           method: 'DELETE',
           headers: {
@@ -189,10 +211,15 @@ const Admin = () => {
             setActivities(prevActivities => 
               prevActivities.filter(activity => activity.id !== id)
             );
-          } else if (activeSection === 'promos') {  // Add this for promos
+          } else if (activeSection === 'promos') {
             // Update promos state after successful deletion
             setPromos(prevPromos => 
               prevPromos.filter(promo => promo.id !== id)
+            );
+          } else if (activeSection === 'banners') {  // Add this for banners
+            // Update banners state after successful deletion
+            setBanners(prevBanners => 
+              prevBanners.filter(banner => banner.id !== id)
             );
           }
           alert('Item deleted successfully');
@@ -206,6 +233,7 @@ const Admin = () => {
       }
     }
   };
+  
   
   
 
@@ -335,6 +363,26 @@ const Admin = () => {
             )}
           </ContentWrapper>
         );
+        case 'cart':
+  return (
+    <ContentWrapper title="Cart Management">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <CustomTable 
+          data={cartItems.map((cart) => ({
+            id: cart.id,
+            activityName: cart.activity.name,
+            quantity: cart.quantity,
+            totalPrice: cart.totalPrice,
+            status: cart.status,
+          }))}
+          columns={['ID', 'Activity Name', 'Quantity', 'Total Price', 'Status']}
+        />
+      )}
+    </ContentWrapper>
+  );
+
       default:
         return (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
