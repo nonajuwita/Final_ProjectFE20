@@ -129,8 +129,61 @@ const Admin = () => {
     console.log("Navigating to:", path);
     navigate(path);
   };
+  const handleAddNew = () => {
+    let path = '';
+  
+    switch (activeSection) {
+      case 'categories':
+        path = '/addCategories';
+        break;
+      case 'activities':
+        path = '/addActivities';
+        break;
+      case 'promos':
+        path = '/addPromos';
+        break;
+      case 'banners':
+        path = '/addBanners';
+        break;
+      case 'users':
+        path = '/addUsers';
+        break;
+      default:
+        path = '/addItem';
+    }
+  
+    console.log("Navigating to:", path);
+    navigate(path);
+  };
   
   
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      try {
+        const response = await fetch(`https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+          },
+        });
+
+        if (response.ok) {
+          // Update the categories state by removing the deleted item
+          setCategories(prevCategories => 
+            prevCategories.filter(category => category.id !== id)
+          );
+          alert('Category deleted successfully');
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to delete category');
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        alert('Failed to delete category: ' + error.message);
+      }
+    }
+  };
 
   const CustomTable = ({ data, columns }) => (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
@@ -154,7 +207,7 @@ const Admin = () => {
                   <button onClick={() => handleEdit(item.id)} className="text-blue-600 hover:text-blue-800">
                     <Pencil className="w-5 h-5" />
                   </button>
-                  <button className="text-red-600 hover:text-red-800">
+                  <button  onClick ={() => handleDelete(item.id)} className="text-red-600 hover:text-red-800">
                     <Trash className="w-5 h-5" />
                   </button>
                 </div>
@@ -171,7 +224,7 @@ const Admin = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-          <button className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+          <button onClick={handleAddNew} className="flex items-center px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" /> Add New
           </button>
         </div>
