@@ -41,6 +41,7 @@ const Register = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          passwordRepeat: formData.passwordRepeat, // Perbaikan: tambahkan passwordRepeat
           role: formData.role,
         }),
       });
