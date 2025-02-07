@@ -94,6 +94,15 @@ element={
   </ProtectedRoute>
 }
 />
+<Route
+  path="/updateactivities/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <Updateactivities />
+    </ProtectedRoute>
+  }
+/>
+
 
 
 
