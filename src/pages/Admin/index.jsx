@@ -14,7 +14,7 @@ import {
   Menu 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import UpdateForm from '../../components/UpdateForm';
+
 
 const Admin = () => {
   const navigate = useNavigate(); // Initialize navigate hook
@@ -160,30 +160,46 @@ const Admin = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        const response = await fetch(`https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`, {
+        let url = '';
+        // Tentukan URL berdasarkan bagian aktif
+        if (activeSection === 'categories') {
+          url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`;
+        } else if (activeSection === 'activities') {
+          url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-activity/${id}`;
+        }
+        
+        const response = await fetch(url, {
           method: 'DELETE',
           headers: {
             'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
           },
         });
-
+  
         if (response.ok) {
-          // Update the categories state by removing the deleted item
-          setCategories(prevCategories => 
-            prevCategories.filter(category => category.id !== id)
-          );
-          alert('Category deleted successfully');
+          if (activeSection === 'categories') {
+            // Update categories state after successful deletion
+            setCategories(prevCategories => 
+              prevCategories.filter(category => category.id !== id)
+            );
+          } else if (activeSection === 'activities') {
+            // Update activities state after successful deletion
+            setActivities(prevActivities => 
+              prevActivities.filter(activity => activity.id !== id)
+            );
+          }
+          alert('Item deleted successfully');
         } else {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to delete category');
+          throw new Error(errorData.message || 'Failed to delete item');
         }
       } catch (error) {
-        console.error('Error deleting category:', error);
-        alert('Failed to delete category: ' + error.message);
+        console.error('Error deleting item:', error);
+        alert('Failed to delete item: ' + error.message);
       }
     }
   };
+  
 
   const CustomTable = ({ data, columns }) => (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
@@ -269,7 +285,7 @@ const Admin = () => {
                   image: <img src={activity.imageUrl} alt={activity.name} className="object-cover w-16 h-16 rounded" />,
                   status: activity.updatedAt,
                 }))}
-                columns={['ID', 'Name', 'Category', 'Image', 'Status']}
+                columns={['ID', 'CATEGORY ID','NAME', 'IMAGE', 'createdAt', ]}
               />
             )}
           </ContentWrapper>

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const Updateactivities = () => {
+const UpdateActivityForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activity, setActivity] = useState({
     name: '',
     description: '',
-    imageUrl: ''
+    imageUrls: [] // Change to an array
   });
 
   useEffect(() => {
@@ -22,9 +22,9 @@ const Updateactivities = () => {
         const selectedActivity = data.data.find(act => act.id === id);
         if (selectedActivity) {
           setActivity({
-            name: selectedActivity.name,
-            description: selectedActivity.description,
-            imageUrl: selectedActivity.imageUrl
+            name: selectedActivity.name || '',
+            description: selectedActivity.description || '',
+            imageUrls: selectedActivity.imageUrls || [] // Adjusted to imageUrls
           });
         }
       } catch (error) {
@@ -42,6 +42,14 @@ const Updateactivities = () => {
     });
   };
 
+  const handleImageUrlsChange = (e) => {
+    const urls = e.target.value.split(',').map(url => url.trim());
+    setActivity({
+      ...activity,
+      imageUrls: urls
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -55,7 +63,7 @@ const Updateactivities = () => {
         body: JSON.stringify({
           name: activity.name,
           description: activity.description,
-          imageUrl: activity.imageUrl
+          imageUrls: activity.imageUrls
         }),
       });
 
@@ -82,27 +90,28 @@ const Updateactivities = () => {
           <input
             type="text"
             name="name"
-            value={activity.name}
+            value={activity.name || ''}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
         <div>
           <label className="block text-sm font-medium">Description</label>
-          <textarea
+          <input
+            type="text"
             name="description"
-            value={activity.description}
+            value={activity.description || ''}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">Image URL</label>
+          <label className="block text-sm font-medium">Image URLs (comma separated)</label>
           <input
             type="text"
-            name="imageUrl"
-            value={activity.imageUrl}
-            onChange={handleChange}
+            name="imageUrls"
+            value={activity.imageUrls.join(', ')} // Display as comma separated string
+            onChange={handleImageUrlsChange}
             className="w-full p-2 border rounded"
           />
         </div>
@@ -117,4 +126,4 @@ const Updateactivities = () => {
   );
 };
 
-export default Updateactivities;
+export default UpdateActivityForm;
