@@ -23,6 +23,7 @@ import UpdateCategoryForm from "./pages/UpdateCategoryForm";
 import AddCategories from "./pages/addCategories";
 import Updateactivities from "./pages/Updateactivities";
 import UpdatePromo from "./pages/UpdatePromo";
+import AddPromo from "./pages/AddPromo";
 
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
@@ -110,6 +111,14 @@ element={
       <UpdatePromo />
     </ProtectedRoute>
   }
+/>
+<Route 
+path="/addPromos"
+element={
+  <ProtectedRoute allowedRoles={["admin"]}>
+    <AddPromo />
+  </ProtectedRoute>
+}
 />
 
 
