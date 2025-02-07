@@ -19,6 +19,7 @@ import UpdateForm from "./components/UpdateForm";// Update form page for editing
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import UpdateCategoryForm from "./pages/UpdateCategoryForm";
 
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
@@ -72,6 +73,14 @@ const App = () => {
   element={
     <ProtectedRoute allowedRoles={["admin"]}>
       <UpdateForm />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/updatecategories/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <UpdateCategoryForm />
     </ProtectedRoute>
   }
 />

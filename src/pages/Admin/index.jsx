@@ -104,9 +104,32 @@ const Admin = () => {
 
   // Navigate to the update form page
   const handleEdit = (id) => {
-    console.log("Navigating to:",`/updateform/${id}`);
-    navigate(`/updateform/${id}`); // Pastikan tidak ada spasi ekstra!
+    let path = '';
+  
+    switch (activeSection) {
+      case 'categories':
+        path = `/updatecategories/${id}`;
+        break;
+      case 'activities':
+        path = `/updateactivities/${id}`;
+        break;
+      case 'promos':
+        path = `/updatepromos/${id}`;
+        break;
+      case 'banners':
+        path = `/updatebanners/${id}`;
+        break;
+      case 'users':
+        path = `/updateform/${id}`;
+        break;
+      default:
+        path = `/updateformelse/${id}`;
+    }
+  
+    console.log("Navigating to:", path);
+    navigate(path);
   };
+  
   
 
   const CustomTable = ({ data, columns }) => (
