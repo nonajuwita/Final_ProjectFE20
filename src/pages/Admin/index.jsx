@@ -14,6 +14,7 @@ import {
   Menu 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import UpdateForm from '../../components/UpdateForm';
 
 const Admin = () => {
   const navigate = useNavigate(); // Initialize navigate hook
@@ -103,8 +104,10 @@ const Admin = () => {
 
   // Navigate to the update form page
   const handleEdit = (id) => {
-    navigate(`/updateform /${id}`); // Navigate to update page with the item id
+    console.log("Navigating to:",`/updateform/${id}`);
+    navigate(`/updateform/${id}`); // Pastikan tidak ada spasi ekstra!
   };
+  
 
   const CustomTable = ({ data, columns }) => (
     <div className="overflow-x-auto bg-white rounded-lg shadow">

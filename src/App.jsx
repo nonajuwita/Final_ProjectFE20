@@ -68,7 +68,7 @@ const App = () => {
 
               {/* Add route for update form with a dynamic ID */}
               <Route
-                path="/update/:id"
+                path="/updateform/:id"
                 element={
                   <ProtectedRoute allowedRoles={["admin"]}>
                     <UpdateForm />
