@@ -6,7 +6,8 @@ const UpdateForm = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
     name: '',
-    email: ''
+    email: '',
+    role: ''
   });
 
   useEffect(() => {
@@ -14,7 +15,7 @@ const UpdateForm = () => {
       try {
         const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOUB5YWh1LmNvbSIsInVzZXJJZCI6IjYwMjcwNjI1LTcyZjYtNDlkYS05MDVmLTcwMDI2NzA5YTM4MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODg5OTAzM30.ghCMbte3J-6oqC9ynGicqgrfFF7HZvqnbBHGwaCwgpU',
             'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
           }
         });
@@ -23,7 +24,8 @@ const UpdateForm = () => {
         if (selectedUser) {
           setUser({
             name: selectedUser.name,
-            email: selectedUser.email
+            email: selectedUser.email,
+            role: selectedUser.role
           });
         }
       } catch (error) {
@@ -44,28 +46,29 @@ const UpdateForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-profile', {
-        method: 'POST',
+      const response = await fetch(`https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-user-role/${id}`, {
+        method: 'POST', // Gunakan PATCH jika API mendukung
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOUB5YWh1LmNvbSIsInVzZXJJZCI6IjYwMjcwNjI1LTcyZjYtNDlkYS05MDVmLTcwMDI2NzA5YTM4MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODg5OTAzM30.ghCMbte3J-6oqC9ynGicqgrfFF7HZvqnbBHGwaCwgpU',
           'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
         },
         body: JSON.stringify({
-          id,
-          name: user.name,
-          email: user.email
+          role: user.role
         }),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        alert('User updated successfully!');
+        alert('User role updated successfully!');
         navigate('/admin');
       } else {
-        alert('Failed to update user');
+        alert(`Failed to update user role: ${result.message}`);
       }
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error('Error updating user role:', error);
+      alert('An error occurred while updating user role.');
     }
   };
 
@@ -81,6 +84,7 @@ const UpdateForm = () => {
             value={user.name}
             onChange={handleChange}
             className="w-full p-2 border rounded"
+            disabled
           />
         </div>
         <div>
@@ -91,13 +95,26 @@ const UpdateForm = () => {
             value={user.email}
             onChange={handleChange}
             className="w-full p-2 border rounded"
+            disabled
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Role</label>
+          <select
+            name="role"
+            value={user.role}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
         <button
           type="submit"
           className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         >
-          Update User
+          Update Role
         </button>
       </form>
     </div>
