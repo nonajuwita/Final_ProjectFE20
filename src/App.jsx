@@ -22,6 +22,7 @@ import { CartProvider } from "./contexts/CartContext";
 import UpdateCategoryForm from "./pages/UpdateCategoryForm";
 import AddCategories from "./pages/addCategories";
 import Updateactivities from "./pages/Updateactivities";
+import UpdatePromo from "./pages/UpdatePromo";
 
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
@@ -99,6 +100,14 @@ element={
   element={
     <ProtectedRoute allowedRoles={["admin"]}>
       <Updateactivities />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/updatepromos/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <UpdatePromo />
     </ProtectedRoute>
   }
 />
