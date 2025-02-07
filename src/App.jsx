@@ -24,7 +24,7 @@ import AddCategories from "./pages/addCategories";
 import Updateactivities from "./pages/Updateactivities";
 import UpdatePromo from "./pages/UpdatePromo";
 import AddPromo from "./pages/AddPromo";
-
+import UpdateBanner from "./pages/UpdateBanner";
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { role, isAuthenticated, loading } = useAuth();
@@ -119,6 +119,14 @@ element={
     <AddPromo />
   </ProtectedRoute>
 }
+/>
+<Route
+  path="/updatebanners/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <UpdateBanner />
+    </ProtectedRoute>
+  }
 />
 
 
