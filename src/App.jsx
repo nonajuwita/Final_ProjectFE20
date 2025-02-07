@@ -21,6 +21,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import UpdateCategoryForm from "./pages/UpdateCategoryForm";
 import AddCategories from "./pages/addCategories";
+import Updateactivities from "./pages/Updateactivities";
 
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
