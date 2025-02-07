@@ -16,6 +16,7 @@ import Admin from "./pages/Admin"; // Admin page import
 import ProfileAdmin from "./pages/ProfileAdmin"; // ProfileAdmin page import
 import UpdateForm from "./components/UpdateForm";// Update form page for editing items
 
+
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -66,15 +67,17 @@ const App = () => {
                 }
               />
 
-              {/* Add route for update form with a dynamic ID */}
-              <Route
-                path="/updateform/:id"
-                element={
-                  <ProtectedRoute allowedRoles={["admin"]}>
-                    <UpdateForm />
-                  </ProtectedRoute>
-                }
-              />
+<Route
+  path="/updateform/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <UpdateForm />
+    </ProtectedRoute>
+  }
+/>
+
+
+
             </Routes>
           </Suspense>
         </Router>
