@@ -166,6 +166,8 @@ const Admin = () => {
           url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-category/${id}`;
         } else if (activeSection === 'activities') {
           url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-activity/${id}`;
+        } else if (activeSection === 'promos') {  // Add this for promos
+          url = `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-promo/${id}`;
         }
         
         const response = await fetch(url, {
@@ -187,6 +189,11 @@ const Admin = () => {
             setActivities(prevActivities => 
               prevActivities.filter(activity => activity.id !== id)
             );
+          } else if (activeSection === 'promos') {  // Add this for promos
+            // Update promos state after successful deletion
+            setPromos(prevPromos => 
+              prevPromos.filter(promo => promo.id !== id)
+            );
           }
           alert('Item deleted successfully');
         } else {
@@ -199,6 +206,7 @@ const Admin = () => {
       }
     }
   };
+  
   
 
   const CustomTable = ({ data, columns }) => (
