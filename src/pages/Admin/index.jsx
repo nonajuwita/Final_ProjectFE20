@@ -103,7 +103,7 @@ const Admin = () => {
 
   // Navigate to the update form page
   const handleEdit = (id) => {
-    navigate(`/update/${id}`); // Navigate to update page with the item id
+    navigate(`/updateform /${id}`); // Navigate to update page with the item id
   };
 
   const CustomTable = ({ data, columns }) => (
