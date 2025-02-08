@@ -49,52 +49,18 @@ const CategoryDetail = () => {
       navigate("/login");
       return;
     }
-
-    // Mengirim langsung object literal tanpa menggunakan variabel 'payload'
-    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/add-cart", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ activityId: activity.id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Check the response message for successful addition
-        if (data.status === "OK" && data.message === "Added to Cart") {
-          // Update context cart (misalnya dengan fungsi addToCart)
-          addToCart({
-            id: activity.id,
-            name: activity.title,
-            price: activity.price,
-            imageUrl: activity.imageUrls?.[0] || "https://via.placeholder.com/300x200",
-            quantity: 1,
-          });
-
-          // Save to localStorage
-          const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-          currentCart.push({
-            id: activity.id,
-            name: activity.title,
-            price: activity.price,
-            imageUrl: activity.imageUrls?.[0] || "https://via.placeholder.com/300x200",
-            quantity: 1,
-          });
-          localStorage.setItem("cart", JSON.stringify(currentCart));
-
-          alert(`${activity.title} berhasil ditambahkan ke keranjang.`);
-        } else {
-          console.error("Response error:", data);
-          alert(`Gagal menambahkan item ke keranjang: ${data.message || "Unknown error"}`);
-        }
-      })
-      .catch((error) => {
-        console.error("Error adding to cart:", error);
-        alert("Gagal menambahkan item ke keranjang.");
-      });
+  
+    addToCart({
+      id: activity.id,
+      name: activity.title,
+      price: activity.price,
+      imageUrl: activity.imageUrls?.[0] || "https://via.placeholder.com/300x200",
+      quantity: 1,
+    });
+  
+    alert(`${activity.title} berhasil ditambahkan ke keranjang.`);
   };
+  
 
   if (loading) {
     return <p className="my-8 text-center">Loading activities...</p>;

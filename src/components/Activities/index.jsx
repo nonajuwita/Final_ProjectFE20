@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useCart } from "../../contexts/CartContext"; // Import useCart
 
 const Activities = () => {
+  const { addToCart } = useCart(); // Gunakan fungsi addToCart dari CartContext
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,6 +66,17 @@ const Activities = () => {
               <h3 className="mb-2 text-lg font-bold">{activity.title}</h3>
               <p className="text-sm text-gray-600">{activity.city}, {activity.province}</p>
               <p className="text-lg font-semibold text-blue-800">Rp {activity.price.toLocaleString()}</p>
+
+              {/* Add to Cart Button */}
+              <button
+                onClick={() => {
+                  addToCart(activity);
+                  alert(`${activity.title} added to cart!`);
+                }}
+                className="px-4 py-2 mt-3 text-white transition bg-green-500 rounded-md hover:bg-green-600"
+              >
+                Add to Cart
+              </button>
             </div>
           ))}
         </div>
