@@ -5,8 +5,7 @@ import Navbar from "./components/Navbar";
 import Category from "./components/Category";
 import Activities from "./components/Activities";
 import Promo from "./components/Promo";
-import CategoryDetail from './components/CategoryDetail';
-
+import CategoryDetail from "./components/CategoryDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cart from "./components/Cart";
@@ -130,7 +129,14 @@ element={
     </ProtectedRoute>
   }
 />
-
+<Route 
+path="/addCategories"
+element={
+  <ProtectedRoute allowedRoles={["admin"]}>
+    <AddBanner />
+  </ProtectedRoute>
+}
+/>
 
 
 
