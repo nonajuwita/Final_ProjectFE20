@@ -20,7 +20,7 @@ import UpdateForm from "./components/UpdateForm";// Update form page for editing
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import UpdateCategoryForm from "./pages/UpdateCategoryForm";
-import AddCategories from "./pages/addCategories";
+import AddCategories from "./pages/AddCategories";
 import Updateactivities from "./pages/Updateactivities";
 import UpdatePromo from "./pages/UpdatePromo";
 import AddPromo from "./pages/AddPromo";
