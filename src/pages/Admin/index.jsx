@@ -45,8 +45,8 @@ const Admin = () => {
         const fetchUsers = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user', {
             headers: {
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
-              'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+              'Authorization': `Bearer ${token}`,
+              'apiKey': import.meta.env.VITE_API_KEY,
             },
           });
           const data = await response.json();
@@ -58,7 +58,7 @@ const Admin = () => {
 
         const fetchCategories = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories', {
-            headers: { 'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c' },
+            headers: { 'apiKey': import.meta.env.VITE_API_KEY },
           });
           const data = await response.json();
           setCategories(data.data || []);
@@ -66,7 +66,7 @@ const Admin = () => {
 
         const fetchActivities = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activities', {
-            headers: { 'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c' },
+            headers: { 'apiKey': import.meta.env.VITE_API_KEY },
           });
           const data = await response.json();
           setActivities(data.data || []);
@@ -74,7 +74,7 @@ const Admin = () => {
 
         const fetchPromos = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/promos', {
-            headers: { 'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c' },
+            headers: { 'apiKey': import.meta.env.VITE_API_KEY },
           });
           const data = await response.json();
           setPromos(data.data || []);
@@ -83,8 +83,8 @@ const Admin = () => {
         const fetchBanners = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/banners', {
             headers: {
-              'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+              "apiKey": import.meta.env.VITE_API_KEY,
+              "Authorization":`Bearer ${token}`
             },
           });
           const data = await response.json();
@@ -107,8 +107,8 @@ const Admin = () => {
     try {
       const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts', {
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOEB5YWh1LmNvbSIsInVzZXJJZCI6ImU2NDFlZDU4LTEzODEtNDQ1Ni05NDQ2LTE4ODAyNDVhNzIwNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODkwMzExM30.D5YhDKqjbzq_83CKcI2Q3FfVsaQ0QVL1yQgwxbk04DM',
-          'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+          'Authorization': `Bearer ${token}`,
+          'apiKey': import.meta.env.VITE_API_KEY,
         },
       });
       const data = await response.json();
@@ -195,8 +195,8 @@ const Admin = () => {
         const response = await fetch(url, {
           method: 'DELETE',
           headers: {
-            'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk',
+            'apiKey': import.meta.env.VITE_API_KEY,
+            'Authorization': `Bearer ${token}`
           },
         });
   

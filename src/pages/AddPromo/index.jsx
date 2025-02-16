@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const AddPromo = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const AddPromo = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken]=useLocalStorage("token","");
 
   const handleChange = (e) => {
     setPromo({
@@ -33,8 +35,8 @@ const AddPromo = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOEB5YWh1LmNvbSIsInVzZXJJZCI6ImU2NDFlZDU4LTEzODEtNDQ1Ni05NDQ2LTE4ODAyNDVhNzIwNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODkwMzExM30.D5YhDKqjbzq_83CKcI2Q3FfVsaQ0QVL1yQgwxbk04DM'
+          "apiKey": import.meta.env.VITE_API_KEY,
+          "Authorization":`Bearer ${token}`
         },
         body: JSON.stringify({
           title: promo.title,
