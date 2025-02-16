@@ -53,8 +53,8 @@ const UpdateBanner = () => {
         method: 'POST',  // Menggunakan POST
         headers: {
           'Content-Type': 'application/json',
-          'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOUB5YWh1LmNvbSIsInVzZXJJZCI6IjYwMjcwNjI1LTcyZjYtNDlkYS05MDVmLTcwMDI2NzA5YTM4MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODg5OTAzM30.ghCMbte3J-6oqC9ynGicqgrfFF7HZvqnbBHGwaCwgpU',
+          'apiKey': import.meta.env.VITE_API_KEY,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: banner.name,
