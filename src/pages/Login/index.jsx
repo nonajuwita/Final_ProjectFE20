@@ -32,13 +32,15 @@ const Login = () => {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
+
   
       const data = await response.json();
-      console.log("Login response:", data); // Debugging
+    
+
   
       // Pastikan mengambil role dari data.data.role
       const userRole = data.data.role;
-      const token = data.data.token; // Pastikan API mengembalikan token di dalam data.data.token
+      const token = data.token; // Pastikan API mengembalikan token di dalam data.data.token
   
       console.log("Extracted role:", userRole);
       console.log("Extracted token:", token);

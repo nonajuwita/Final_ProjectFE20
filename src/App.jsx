@@ -15,8 +15,6 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin"; // Admin page import
 import ProfileAdmin from "./pages/ProfileAdmin"; // ProfileAdmin page import
 import UpdateForm from "./components/UpdateForm";// Update form page for editing items
-
-
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import UpdateCategoryForm from "./pages/UpdateCategoryForm";
@@ -130,7 +128,7 @@ element={
   }
 />
 <Route 
-path="/addCategories"
+path="/addBanner"
 element={
   <ProtectedRoute allowedRoles={["admin"]}>
     <AddBanner />
