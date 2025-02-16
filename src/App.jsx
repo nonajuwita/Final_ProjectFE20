@@ -128,7 +128,7 @@ element={
   }
 />
 <Route 
-path="/addBanner"
+path="/addBanners"
 element={
   <ProtectedRoute allowedRoles={["admin"]}>
     <AddBanner />

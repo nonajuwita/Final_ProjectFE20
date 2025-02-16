@@ -6,6 +6,7 @@ const AddCategories = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(""); // State for error messages
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
