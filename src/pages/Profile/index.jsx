@@ -6,7 +6,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiKey = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
+  const apiKey = import.meta.env.VITE_API_KEY;
   const token = localStorage.getItem("token") || "";
 
   const fetchUserProfile = useCallback(async () => {
