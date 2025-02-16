@@ -22,7 +22,7 @@ const Login = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+            apiKey: import.meta.env.VITE_API_KEY,
           },
           body: JSON.stringify({ email, password }),
         }
