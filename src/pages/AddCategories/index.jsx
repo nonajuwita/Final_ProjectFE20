@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 const AddCategories = () => {
   const [name, setName] = useState("");
