@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   const [token, setToken]=useLocalStorage("token","");
 
   useEffect(() => {
     const fetchTransactions = async () => {

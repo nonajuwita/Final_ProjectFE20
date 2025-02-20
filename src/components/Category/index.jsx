@@ -18,10 +18,12 @@ const Category = () => {
           "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories",
           {
             headers: {
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+              apiKey: import.meta.env.VITE_API_KEY,
             },
           }
         );
+
+         
 
         if (!response.ok) {
           throw new Error("Failed to fetch categories");

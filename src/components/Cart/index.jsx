@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useCart } from "../../hooks/useCart";
+import { useTransaction } from "../../hooks/useTransaction";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
+  
+  const{data:cartItems, updateCart, loading, deleteCart, fetchData:fetchCart} = useCart()
+  const{createTransaction}= useTransaction()
   const [paymentMethods, setPaymentMethods] = useState([]); 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(""); 
+  const [paymentProof, setPaymentProof] = useState(null);  // State for payment proof
+  const [token, setToken] = useLocalStorage("token", "");
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
-    // Ambil data cart dari localStorage
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartWithDefaultQuantity = storedCart.map((item) => ({
-      ...item,
-      quantity: item.quantity || 1,
-    }));
-    setCartItems(cartWithDefaultQuantity);
+    
+
 
     // Ambil metode pembayaran dari API
     fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods", {
       headers: {
-        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+        apiKey: import.meta.env.VITE_API_KEY,
       },
     })
       .then((response) => response.json())
@@ -27,42 +29,15 @@ const Cart = () => {
       .catch((error) => console.error("Error fetching payment methods:", error));
   }, []);
 
-  const handleRemoveItem = (itemId) => {
-    const updatedCart = cartItems.filter((item) => item.id !== itemId);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
 
-  const handleIncreaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, quantity: (item.quantity || 1) + 1 };
-      }
-      return item;
-    });
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
 
-  const handleDecreaseQuantity = (itemId) => {
-    const updatedCart = cartItems
-      .map((item) => {
-        if (item.id === itemId) {
-          const newQuantity = item.quantity - 1;
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-        }
-        return item;
-      })
-      .filter((item) => item !== null);
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
+ 
 
   const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+    return cartItems.reduce((total, item) => total + item.activity.price * (item.quantity || 1), 0);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert("Cart is empty!");
       return;
@@ -73,33 +48,50 @@ const Cart = () => {
       return;
     }
 
-    const transactionData = {
-      activities: cartItems.map((item) => ({
-        activity_id: item.id,
-        quantity: item.quantity,
-      })),
-      payment_method_id: selectedPaymentMethod,
-    };
+    await createTransaction(cartItems.map(item => item.id), selectedPaymentMethod)
+    await fetchCart() 
 
-    fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pZnRhaGZhcmhhbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI5NWE4MDNjMy1iNTFlLTQ3YTAtOTBkYi0yYzJmM2Y0ODE1YTkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjI4NDgzODl9.Yblw19ySKtguk-25Iw_4kBKPfqcNqKWx9gjf505DIAk",
-      },
-      body: JSON.stringify(transactionData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        alert("Transaction successful!");
-        navigate("/transactions");
-      })
-      .catch((error) => {
-        console.error("Error creating transaction:", error);
-        alert("Transaction failed!");
-      });
+   
+
+    // const transactionData = {
+    //   activities: cartItems.map((item) => ({
+    //     activity_id: item.id,
+    //     quantity: item.quantity,
+    //   })),
+    //   payment_method_id: selectedPaymentMethod,
+    // };
+
+    // // Create FormData object to include payment proof image
+    // const formData = new FormData();
+    // formData.append("transactionData", JSON.stringify(transactionData));
+    // formData.append("paymentProof", paymentProof);  // Append the payment proof file
+
+    // fetch("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction", {
+    //   method: "POST",
+    //   headers: {
+    //     apiKey: import.meta.env.VITE_API_KEY,
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   body: formData,  // Send the form data including the file
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     alert("Transaction successful!");
+    //     navigate("/transactions");
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error creating transaction:", error);
+    //     alert("Transaction failed!");
+    //   });
+  };
+
+ 
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPaymentProof(file);  // Set the selected file to paymentProof state
+    }
   };
 
   return (
@@ -114,35 +106,38 @@ const Cart = () => {
               <li key={item.id} className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center">
                   <img
-                    src={item.imageUrl || "https://via.placeholder.com/150"}
-                    alt={item.name}
+                    src={(item.activity.imageUrls || [])[0]|| "https://via.placeholder.com/150"}
+                    alt={item.activity.name}
                     className="object-cover w-16 h-16 rounded-md"
                   />
                   <div className="ml-4">
-                    <h2 className="font-bold text-gray-800">{item.name}</h2>
-                    <p className="text-sm text-gray-600">Price: Rp {item.price.toLocaleString()}</p>
+                    <h2 className="font-bold text-gray-800">{item.activity.name}</h2>
+                    <p className="text-sm text-gray-600">Price: Rp {item.activity.price.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Quantity: {item.quantity || 1}</p>
                     <p className="text-sm font-bold text-gray-600">
-                      Total: Rp {(item.price * (item.quantity || 1)).toLocaleString()}
+                      Total: Rp {(item.activity.price * (item.quantity || 1)).toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <button
-                    onClick={() => handleDecreaseQuantity(item.id)}
+                    onClick={() => {updateCart(item.id, item.quantity-1)}}
                     className="px-3 py-2 text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
+                    disabled={loading || item.quantity === 1}
                   >
                     -
                   </button>
                   <button
-                    onClick={() => handleIncreaseQuantity(item.id)}
+                    onClick={() => {updateCart(item.id, item.quantity+1)}}
                     className="px-3 py-2 text-white bg-green-500 rounded-full hover:bg-green-600"
+                    disabled={loading}
                   >
                     +
                   </button>
                   <button
-                    onClick={() => handleRemoveItem(item.id)}
+                    onClick={() => {deleteCart(item.id)}}
                     className="px-3 py-2 text-white bg-red-500 rounded-full hover:bg-red-600"
+                    disabled={loading}
                   >
                     Remove
                   </button>
@@ -173,15 +168,32 @@ const Cart = () => {
               ))}
             </select>
           </div>
-          <div className="flex items-center justify-between mt-6">
-            <button
-              onClick={handleCheckout}
-              className="px-6 py-3 text-white bg-blue-500 rounded-full hover:bg-blue-600"
-            >
-              Proceed to Checkout
-            </button>
-            <span className="font-bold text-gray-800">Total Items: {cartItems.length}</span>
+          <div className="mt-6">
+            <label htmlFor="payment-proof" className="block mb-2 text-sm font-medium text-gray-700">
+              Upload Payment Proof
+            </label>
+            <input
+              type="file"
+              id="payment-proof"
+              className="w-full px-4 py-2 border rounded-md"
+              onChange={handleFileChange}
+            />
           </div>
+          <div className="flex items-center justify-between mt-6 space-x-4">
+  <button
+    onClick={handleCheckout}
+    className="px-6 py-3 text-white bg-blue-500 rounded-full hover:bg-blue-600"
+  >
+    Proceed to Checkout
+  </button>
+  <button
+    
+    className="px-6 py-3 text-white bg-red-500 rounded-full hover:bg-red-600"
+  >
+    Cancel
+  </button>
+</div>
+
         </div>
       )}
     </div>

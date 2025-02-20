@@ -8,6 +8,7 @@ const AddBanner = () => {
   const [error, setError] = useState(""); // State for error messages
   const [token, setToken]=useLocalStorage("token","");
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

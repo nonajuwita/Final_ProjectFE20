@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useCart } from "../../contexts/CartContext"; // Import useCart
+import { useCart } from "../../hooks/useCart";
+
 
 const Activities = () => {
-  const { addToCart } = useCart(); // Gunakan fungsi addToCart dari CartContext
+ 
+  const {addToCart} = useCart()
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,10 +17,11 @@ const Activities = () => {
           "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activities",
           {
             headers: {
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+              apiKey: import.meta.env.VITE_API_KEY,
             },
           }
         );
+        
 
         if (!response.ok) {
           throw new Error("Failed to fetch activities");
@@ -70,8 +73,9 @@ const Activities = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={() => {
-                  addToCart(activity);
-                  alert(`${activity.title} added to cart!`);
+                  addToCart(activity.id, activity.title);
+
+                  
                 }}
                 className="px-4 py-2 mt-3 text-white transition bg-green-500 rounded-md hover:bg-green-600"
               >

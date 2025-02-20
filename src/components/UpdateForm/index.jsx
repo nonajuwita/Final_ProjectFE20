@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const UpdateForm = () => {
   const { id } = useParams();
@@ -9,6 +10,7 @@ const UpdateForm = () => {
     email: '',
     role: ''
   });
+  const [token, setToken]=useLocalStorage("token","");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,8 +52,9 @@ const UpdateForm = () => {
         method: 'POST', // Gunakan PATCH jika API mendukung
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pbmppOUB5YWh1LmNvbSIsInVzZXJJZCI6IjYwMjcwNjI1LTcyZjYtNDlkYS05MDVmLTcwMDI2NzA5YTM4MyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczODg5OTAzM30.ghCMbte3J-6oqC9ynGicqgrfFF7HZvqnbBHGwaCwgpU',
-          'apiKey': '24405e01-fbc1-45a5-9f5a-be13afcd757c',
+          "apiKey": import.meta.env.VITE_API_KEY,
+          "Authorization":`Bearer ${token}`
+          
         },
         body: JSON.stringify({
           role: user.role

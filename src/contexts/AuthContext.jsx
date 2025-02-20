@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const AuthContext = createContext();
+
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -10,13 +12,15 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useLocalStorage("token", "");
+  const [userRole, setUserRole] = useLocalStorage("role", "");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
+    
 
-    console.log("Stored token:", token);
-    console.log("Stored role:", userRole);
+    // console.log("Stored token:", token);
+    // console.log("Stored role:", userRole);
+    console.log({userRole})  
 
     if (token && userRole) {
       setIsAuthenticated(true);
@@ -27,11 +31,12 @@ export const AuthProvider = ({ children }) => {
     }
 
     setLoading(false);
-  }, []);
+  }, [token, userRole]);
 
   const login = (token, userRole) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", userRole);
+    setToken(token);
+    setUserRole(userRole);
+
     setIsAuthenticated(true);
     setRole(userRole);
   };
@@ -44,8 +49,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.clear();
   };
 
+  
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, role, login, logout, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, role, login, logout, loading, token }}>
       {children}
     </AuthContext.Provider>
   );

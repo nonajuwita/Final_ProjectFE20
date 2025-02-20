@@ -14,7 +14,8 @@ import {
   Menu 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useCart } from '../../hooks/useCart';
 
 const Admin = () => {
   const navigate = useNavigate(); // Initialize navigate hook
@@ -26,6 +27,8 @@ const Admin = () => {
   const [promos, setPromos] = useState([]);
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken]=useLocalStorage("token","");
+  const { data: cartItems, loading: cartLoading, error: cartError, fetchData: fetchCart }=useCart();
 
   const menuItems = [
     { id: 'users', label: 'Users', icon: User },
@@ -45,8 +48,10 @@ const Admin = () => {
         const fetchUsers = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-user', {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'apiKey': import.meta.env.VITE_API_KEY,
+          "apiKey": import.meta.env.VITE_API_KEY,
+          "Authorization":`Bearer ${token}`
+              
+              
             },
           });
           const data = await response.json();
@@ -101,26 +106,26 @@ const Admin = () => {
 
     fetchData();
   }, []);
-  const [cartItems, setCartItems] = useState([]);
+  // const [cartItems, setCartItems] = useState([]);
 
-  const fetchCartData = async () => {
-    try {
-      const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'apiKey': import.meta.env.VITE_API_KEY,
-        },
-      });
-      const data = await response.json();
-      setCartItems(data.data || []);
-    } catch (error) {
-      console.error('Error fetching cart data:', error);
-    }
-  };
+  // const fetchCartData = async () => {
+  //   try {
+  //     const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/carts', {
+  //       headers: {
+  //         "apiKey": import.meta.env.VITE_API_KEY,
+  //             "Authorization":`Bearer ${token}`
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     setCartItems(data.data || []);
+  //   } catch (error) {
+  //     console.error('Error fetching cart data:', error);
+  //   }
+  // };
   
-  useEffect(() => {
-    fetchCartData();
-  }, []);
+  // useEffect(() => {
+  //   fetchCartData();
+  // }, []);
   
   // Navigate to the update form page
   const handleEdit = (id) => {
@@ -366,7 +371,7 @@ const Admin = () => {
         case 'cart':
   return (
     <ContentWrapper title="Cart Management">
-      {loading ? (
+      {cartLoading ? (
         <p>Loading...</p>
       ) : (
         <CustomTable 

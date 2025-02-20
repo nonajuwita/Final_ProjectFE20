@@ -48,7 +48,14 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
 

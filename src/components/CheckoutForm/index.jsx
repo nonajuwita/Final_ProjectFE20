@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+
 
 const CheckoutForm = ({ cartItems }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [token, setToken]=useLocalStorage("token","");
   const navigate = useNavigate();
 
   const handleCheckout = async () => {
@@ -15,11 +18,11 @@ const CheckoutForm = ({ cartItems }) => {
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
         {
           method: "POST",
+          
+
           headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5vbmE0QGdtYWlsLmNvbSIsInVzZXJJZCI6IjcyMzBkMmMyLTU0ZjEtNDZhNS04ZTQ4LWQ2YjQ3ZGEyN2M4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM3NDQ5Njc2fQ.SZlMq8VYrBkWDAGQF2FeWagqpMJ4QohLtFgm5_hon3w",
-            "Content-Type": "application/json",
+            "apiKey": import.meta.env.VITE_API_KEY,
+          "Authorization":`Bearer ${token}`,
           },
           body: JSON.stringify({
             activities: cartItems.map((item) => ({
