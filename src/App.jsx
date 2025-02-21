@@ -25,6 +25,7 @@ import AddPromo from "./pages/AddPromo";
 import UpdateBanner from "./pages/UpdateBanner";
 import AddBanner from "./pages/AddBanner";
 import UpdateTransaction from "./pages/UpdateTransaction"
+import Footer from "./components/Footer";
 // ProtectedRoute component for role-based access control
 const ProtectedRoute = ({ allowedRoles, children }) => {
   const { role, isAuthenticated, loading } = useAuth();
@@ -42,6 +43,7 @@ const App = () => {
       <CartProvider>
         <Router>
           <Navbar />
+          
           <Suspense fallback={<p>Loading...</p>}>
             <Routes>
               <Route path="/" element={<><Banners /><Category /><Activities /><Promo /></>} />
@@ -157,6 +159,7 @@ element={
 
             </Routes>
           </Suspense>
+          <Footer/>
         </Router>
       </CartProvider>
     </AuthProvider>

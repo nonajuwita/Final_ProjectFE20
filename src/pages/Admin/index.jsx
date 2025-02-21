@@ -41,8 +41,8 @@ const Admin = () => {
     { id: 'activities', label: 'Activities', icon: Activity },
     { id: 'promos', label: 'Promos', icon: Ticket },
     { id: 'banners', label: 'Banners', icon: Image },
-    { id: 'payment-methods', label: 'Payment Methods', icon: Camera },
-    { id: 'cart', label: 'Cart', icon: ShoppingCart },
+    
+    
     { id: 'transactions', label: 'Transactions', icon: ClipboardList },
   ];
 
@@ -102,15 +102,29 @@ const Admin = () => {
           setBanners(data.data || []);
         };
         const fetchTransactions = async () => {
-          const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-transactions', {
-            headers: {
-              "apiKey": import.meta.env.VITE_API_KEY,
-              "Authorization": `Bearer ${token}`
+          try {
+            const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-transactions', {
+              headers: {
+                "apiKey": import.meta.env.VITE_API_KEY,
+                "Authorization": `Bearer ${token}`
+              }
+            });
+        
+            // Periksa status respons
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
             }
-          });
-          const data = await response.json();
-          setTransactions(data.data || []);
+        
+            const data = await response.json();
+            console.log(data); // Log untuk melihat seluruh data respons
+        
+            // Jika data ditemukan, setTransactions dengan data yang diterima, jika tidak, set ke array kosong
+            setTransactions(data.data || []);
+          } catch (error) {
+            console.error('Error fetching transactions:', error);
+          }
         };
+        
         
         
 
@@ -149,6 +163,12 @@ const Admin = () => {
   // }, []);
   
   // Navigate to the update form page
+
+  const handleDetail = (id) => {
+    // Navigasi ke halaman detail transaksi menggunakan ID yang dipilih
+    navigate(`/transaction/:id`);
+  };
+  
   const handleEdit = (id) => {
     let path = '';
   
@@ -412,45 +432,47 @@ const Admin = () => {
   case 'transactions':
   return (
     <ContentWrapper title="Transactions Management">
-  {loading ? (
-    <p>Loading...</p>
-  ) : (
-    <table className="w-full border border-collapse border-gray-300">
-      <thead>
-        <tr className="bg-gray-200">
-          <th className="p-2 border border-gray-300">ID</th>
-          <th className="p-2 border border-gray-300">User</th>
-          <th className="p-2 border border-gray-300">Activity</th>
-          <th className="p-2 border border-gray-300">Amount</th>
-          <th className="p-2 border border-gray-300">Status</th>
-          <th className="p-2 border border-gray-300">Created At</th>
-          <th className="p-2 border border-gray-300">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {transactions.map((transaction) => (
-          <tr key={transaction.id} className="odd:bg-white even:bg-gray-100">
-            <td className="p-2 border border-gray-300">{transaction.id}</td>
-            <td className="p-2 border border-gray-300">{transaction.userId}</td>
-            <td className="p-2 border border-gray-300">
-              {transaction.transaction_items.map(item => item.title).join(", ")}
-            </td>
-            <td className="p-2 border border-gray-300">{transaction.totalAmount}</td>
-            <td className="p-2 border border-gray-300">{transaction.status}</td>
-            <td className="p-2 border border-gray-300">{transaction.createdAt}</td>
-            <td className="p-2 border border-gray-300">
-            <Link to={`/transaction/${transaction.id}`}>
-                <button className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-                  Detail Transaction
-                </button>
-              </Link>
-            </td>
+    {loading ? (
+      <p>Loading...</p>
+    ) : (
+      <table className="w-full border border-collapse border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="p-2 border border-gray-300">ID</th>
+            <th className="p-2 border border-gray-300">User</th>
+            <th className="p-2 border border-gray-300">Activity</th>
+            <th className="p-2 border border-gray-300">Amount</th>
+            <th className="p-2 border border-gray-300">Status</th>
+            <th className="p-2 border border-gray-300">Created At</th>
+            <th className="p-2 border border-gray-300">Action</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  )}
-</ContentWrapper>
+        </thead>
+        <tbody>
+          {transactions.map((transaction) => (
+            <tr key={transaction.id} className="odd:bg-white even:bg-gray-100">
+              <td className="p-2 border border-gray-300">{transaction.id}</td>
+              <td className="p-2 border border-gray-300">{transaction.userId}</td>
+              <td className="p-2 border border-gray-300">
+                {transaction.transaction_items.map(item => item.title).join(", ")}
+              </td>
+              <td className="p-2 border border-gray-300">{transaction.totalAmount}</td>
+              <td className="p-2 border border-gray-300">{transaction.status}</td>
+              <td className="p-2 border border-gray-300">{transaction.createdAt}</td>
+              <td className="p-2 border border-gray-300">
+                <button
+                  onClick={() => handleDetail(transaction.id)}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Detail
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </ContentWrapper>
+
 
 
   );
