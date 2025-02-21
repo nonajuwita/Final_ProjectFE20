@@ -10,12 +10,11 @@ const TransactionDetail = () => {
   const { data, loading, error } = useTransaction();
   const [transactionDetail, setTransactionDetail] = useState(null);
   const [paymentFile, setPaymentFile] = useState(null);
-  const [paymentFilePreview, setPaymentFilePreview] = useState(null); // State untuk preview file
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [token] = useLocalStorage("token", "");
 
-  // Ambil API key dari environment variable
+  // Definisikan API key sesuai dengan pengaturan Anda
   const yourApiKey = import.meta.env.VITE_API_KEY;
 
   useEffect(() => {
@@ -29,11 +28,6 @@ const TransactionDetail = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setPaymentFile(file);
-    if (file && file.type.startsWith("image")) {
-      setPaymentFilePreview(URL.createObjectURL(file)); // Menyimpan URL sementara untuk gambar
-    } else {
-      setPaymentFilePreview(null); // Jika bukan gambar, tidak menampilkan preview
-    }
   };
 
   const handleUpload = async () => {
@@ -43,7 +37,6 @@ const TransactionDetail = () => {
     }
   
     const formData = new FormData();
-    // Ganti "file" dengan "image" agar sesuai dengan API
     formData.append("image", paymentFile);
   
     try {
@@ -62,13 +55,29 @@ const TransactionDetail = () => {
         }
       );
   
-      if (response.data && response.data.status === "OK") {
+      if (response.status === 200) {
         setUploadSuccess(true);
         alert("Bukti pembayaran berhasil diunggah!");
+  
+        // Mendapatkan URL bukti pembayaran
+        const proofPaymentUrl = response.data.url; // Pastikan response ini berisi URL gambar yang diunggah
+  
+        // Memperbarui status transaksi dengan bukti pembayaran
+        await axios.post(
+          `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-transaction-proof-payment/${transactionDetail.id}`,
+          { proofPaymentUrl },
+          {
+            headers: {
+              apiKey: import.meta.env.VITE_API_KEY,
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        alert("Bukti pembayaran berhasil diperbarui!");
       } else {
         alert("Gagal mengunggah bukti pembayaran.");
       }
-      
     } catch (error) {
       console.error("Error mengunggah bukti pembayaran:", error);
       alert("Gagal mengunggah bukti pembayaran");
@@ -76,6 +85,7 @@ const TransactionDetail = () => {
       setUploading(false);
     }
   };
+  
   
 
   const updateTransactionStatus = async (newStatus) => {
@@ -86,7 +96,7 @@ const TransactionDetail = () => {
         { status: newStatus },
         {
           headers: {
-            apiKey: yourApiKey,
+            apiKey: import.meta.env.VITE_API_KEY,
             Authorization: `Bearer ${token}`,
           },
         }
@@ -196,16 +206,6 @@ const TransactionDetail = () => {
               onChange={handleFileChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
-            {/* Menampilkan preview file jika ada */}
-            {paymentFilePreview && (
-              <div className="mt-4 text-center">
-                <img
-                  src={paymentFilePreview}
-                  alt="Preview"
-                  className="object-cover w-32 h-32 mx-auto rounded-lg"
-                />
-              </div>
-            )}
             <div className="mt-4 text-center">
               <button
                 onClick={handleUpload}
@@ -214,6 +214,9 @@ const TransactionDetail = () => {
               >
                 {uploading ? "Mengunggah..." : "Unggah Bukti Pembayaran"}
               </button>
+            </div>
+            <div className="mt-4 text-center">
+             
             </div>
             {uploadSuccess && (
               <div className="mt-4 text-center text-green-600">

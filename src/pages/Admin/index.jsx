@@ -11,21 +11,26 @@ import {
   Plus, 
   Pencil, 
   Trash, 
-  Menu 
+  Menu, 
+  Layout
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useCart } from '../../hooks/useCart';
+import { useTransaction } from '../../hooks/useTransaction';
 
 const Admin = () => {
   const navigate = useNavigate(); // Initialize navigate hook
+   const { data: transaction, error } = useTransaction();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([])
   const [categories, setCategories] = useState([]);
   const [activities, setActivities] = useState([]);
   const [promos, setPromos] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [token, setToken]=useLocalStorage("token","");
   const { data: cartItems, loading: cartLoading, error: cartError, fetchData: fetchCart }=useCart();
@@ -60,6 +65,7 @@ const Admin = () => {
             setUsers(filteredUsers);
           }
         };
+        
 
         const fetchCategories = async () => {
           const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories', {
@@ -95,8 +101,23 @@ const Admin = () => {
           const data = await response.json();
           setBanners(data.data || []);
         };
+        const fetchTransactions = async () => {
+          const response = await fetch('https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/all-transactions', {
+            headers: {
+              "apiKey": import.meta.env.VITE_API_KEY,
+              "Authorization": `Bearer ${token}`
+            }
+          });
+          const data = await response.json();
+          setTransactions(data.data || []);
+        };
+        
+        
 
-        await Promise.all([fetchUsers(), fetchCategories(), fetchActivities(), fetchPromos(), fetchBanners()]);
+        await Promise.all([
+          fetchUsers(), fetchCategories(),
+           fetchActivities(), fetchPromos(),
+            fetchBanners(), fetchTransactions() ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -148,7 +169,8 @@ const Admin = () => {
         path = `/updateform/${id}`;
         break;
       default:
-        path = `/updateformelse/${id}`;
+        path = `/transaction/${id}`;
+        
     }
   
     console.log("Navigating to:", path);
@@ -387,9 +409,56 @@ const Admin = () => {
       )}
     </ContentWrapper>
   );
+  case 'transactions':
+  return (
+    <ContentWrapper title="Transactions Management">
+  {loading ? (
+    <p>Loading...</p>
+  ) : (
+    <table className="w-full border border-collapse border-gray-300">
+      <thead>
+        <tr className="bg-gray-200">
+          <th className="p-2 border border-gray-300">ID</th>
+          <th className="p-2 border border-gray-300">User</th>
+          <th className="p-2 border border-gray-300">Activity</th>
+          <th className="p-2 border border-gray-300">Amount</th>
+          <th className="p-2 border border-gray-300">Status</th>
+          <th className="p-2 border border-gray-300">Created At</th>
+          <th className="p-2 border border-gray-300">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {transactions.map((transaction) => (
+          <tr key={transaction.id} className="odd:bg-white even:bg-gray-100">
+            <td className="p-2 border border-gray-300">{transaction.id}</td>
+            <td className="p-2 border border-gray-300">{transaction.userId}</td>
+            <td className="p-2 border border-gray-300">
+              {transaction.transaction_items.map(item => item.title).join(", ")}
+            </td>
+            <td className="p-2 border border-gray-300">{transaction.totalAmount}</td>
+            <td className="p-2 border border-gray-300">{transaction.status}</td>
+            <td className="p-2 border border-gray-300">{transaction.createdAt}</td>
+            <td className="p-2 border border-gray-300">
+            <Link to={`/transaction/${transaction.id}`}>
+                <button className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                  Detail Transaction
+                </button>
+              </Link>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</ContentWrapper>
+
+
+  );
+
 
       default:
         return (
+          
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {menuItems.map((item) => (
               <div 
@@ -444,3 +513,7 @@ const Admin = () => {
 };
 
 export default Admin;
+
+
+
+

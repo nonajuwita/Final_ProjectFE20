@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Layout from '../../components/layout/Layout';
 
 const UpdateCategoryForm = () => {
   const { id } = useParams();
@@ -71,7 +72,8 @@ const UpdateCategoryForm = () => {
   };
 
   return (
-    <div className="max-w-lg p-6 mx-auto mt-10 bg-white rounded-lg shadow-lg">
+    <Layout>
+      <div className="max-w-lg p-6 mx-auto mt-10 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold">Update Category</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -102,6 +104,7 @@ const UpdateCategoryForm = () => {
         </button>
       </form>
     </div>
+    </Layout>
   );
 };
 
