@@ -48,8 +48,9 @@ const Cart = () => {
       alert("Please select a payment method!");
       return;
     }
+    const totalPrice = calculateTotalPrice(); // Hitung total dari cart
 
-    await createTransaction(cartItems.map(item => item.id), selectedPaymentMethod)
+    await createTransaction(cartItems.map(item => item.id), selectedPaymentMethod, totalPrice)
     await fetchCart() 
 
    
