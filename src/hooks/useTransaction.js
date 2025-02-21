@@ -1,5 +1,6 @@
 import { useEffect , useState} from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -8,6 +9,7 @@ export const useTransaction = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
      const [token, setToken]=useLocalStorage("token","");
+     const navigate = useNavigate();
 
     const fetchData = async () => {
         setLoading(true);
@@ -50,6 +52,8 @@ export const useTransaction = () => {
               
              
               alert(`Success Checkout`);
+              navigate("/transactions");
+              
 
 
         } catch (error) {

@@ -4,6 +4,7 @@ import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useCart } from "../../hooks/useCart";
 import { useTransaction } from "../../hooks/useTransaction";
 
+
 const Cart = () => {
   
   const{data:cartItems, updateCart, loading, deleteCart, fetchData:fetchCart} = useCart()
