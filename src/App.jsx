@@ -57,7 +57,7 @@ const App = () => {
                 }
               />
               <Route path="/transactions" element={<Transactions />} />
-              <Route path="/transactions/:transactionId" element={<TransactionDetail />} />
+              <Route path="/transaction/:id" element={<TransactionDetail />} />
 
               {/* Admin and ProfileAdmin routes */}
               <Route

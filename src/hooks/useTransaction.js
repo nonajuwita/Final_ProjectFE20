@@ -45,7 +45,7 @@ export const useTransaction = () => {
   };
 
   // Function to create a new transaction
-  const createTransaction = async (cartIds, paymentMethodId) => {
+  const createTransaction = async (cartIds, paymentMethodId, total) => {
     setLoading(true);
     setError(null);
     try {
@@ -53,7 +53,9 @@ export const useTransaction = () => {
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
         {
           method: "POST",
-          body: JSON.stringify({ cartIds, paymentMethodId }),
+          body: JSON.stringify({
+             cartIds,
+              paymentMethodId, total }),
           headers: {
             "Content-Type": "application/json",
             apiKey: import.meta.env.VITE_API_KEY,
